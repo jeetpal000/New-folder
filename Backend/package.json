@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test",
     "migrate:subscription-usage": "node scripts/backfillSubscriptionUsage.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
