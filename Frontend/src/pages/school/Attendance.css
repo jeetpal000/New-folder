@@ -1,0 +1,131 @@
+.attendance-print {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 7mm;
+  }
+
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .attendance-print,
+  .attendance-print * {
+    visibility: visible !important;
+  }
+
+  .attendance-print {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 999999 !important;
+    display: block !important;
+    width: 100% !important;
+    color: #111 !important;
+    background: #fff !important;
+    font-family: Arial, sans-serif !important;
+  }
+
+  .attendance-print-header {
+    margin-bottom: 7px;
+  }
+
+  .attendance-print-header h1 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .attendance-print-meta,
+  .attendance-print-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 4px;
+    font-size: 9px;
+  }
+
+  .attendance-print-legend {
+    margin: 3px 0 0;
+    font-size: 8px;
+  }
+
+  .attendance-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    color: #111 !important;
+    background: #fff !important;
+    font-size: 6.5px;
+  }
+
+  .attendance-print-table th,
+  .attendance-print-table td {
+    overflow-wrap: anywhere;
+    border: 1px solid #777 !important;
+    padding: 2px 1px !important;
+    color: #111 !important;
+    background: #fff !important;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .attendance-print-table thead th {
+    font-weight: 700;
+  }
+
+  .attendance-print-table th:nth-child(1),
+  .attendance-print-table td:nth-child(1) {
+    width: 22px;
+  }
+
+  .attendance-print-table th:nth-child(2),
+  .attendance-print-table td:nth-child(2) {
+    width: 92px;
+  }
+
+  .attendance-print-table th:nth-child(3),
+  .attendance-print-table td:nth-child(3) {
+    width: 42px;
+  }
+
+  .attendance-print-table th:nth-last-child(-n + 5),
+  .attendance-print-table td:nth-last-child(-n + 5) {
+    width: 23px;
+  }
+
+  .attendance-print-table .attendance-print-name {
+    text-align: left;
+  }
+
+  .attendance-print-table .attendance-print-holiday {
+    background: #fef3c7 !important;
+  }
+
+  .attendance-print-table th small {
+    display: block;
+    overflow: hidden;
+    max-height: 12px;
+    font-size: 5px;
+    font-weight: 400;
+  }
+
+  .attendance-print-table tbody tr {
+    break-inside: avoid;
+  }
+
+  .attendance-print-table tfoot {
+    font-weight: 700;
+  }
+}

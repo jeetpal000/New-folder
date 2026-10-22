@@ -1,0 +1,80 @@
+.smoke-particle {
+  position: absolute;
+  filter: blur(2px);
+  box-shadow:
+    0 0 8px var(--primary),
+    0 0 18px var(--primary),
+    0 0 30px var(--primary);
+
+  border-radius: 50%;
+
+  background: var(--primary);
+
+  opacity: 0;
+
+  filter: blur(1px);
+
+  box-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primary);
+
+  animation-name: smokeParticle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+
+  will-change: transform, opacity;
+}
+
+@keyframes smokeParticle {
+  /* Start invisible */
+  0% {
+    opacity: 0;
+
+    transform: translate(0, 0) scale(0.2);
+  }
+
+  /* Slowly appear */
+  10% {
+    opacity: 0.15;
+
+    transform: translate(calc(var(--x1) * 0.2), calc(var(--y1) * 0.2))
+      scale(0.5);
+  }
+
+  /* Visible */
+  25% {
+    opacity: 0.7;
+
+    transform: translate(var(--x1), var(--y1)) scale(var(--scale));
+  }
+
+  /* Drift */
+  45% {
+    opacity: 0.9;
+
+    transform: translate(var(--x2), var(--y2)) scale(0.8);
+  }
+
+  /* Direction change */
+  65% {
+    opacity: 0.6;
+
+    transform: translate(var(--x3), var(--y3)) scale(1.2);
+  }
+
+  /* Slowly disappear */
+  82% {
+    opacity: 0.25;
+
+    transform: translate(calc(var(--x3) * 1.2), calc(var(--y3) * 1.2))
+      scale(0.6);
+  }
+
+  /* Completely disappear */
+  100% {
+    opacity: 0;
+
+    transform: translate(calc(var(--x3) * 1.5), calc(var(--y3) * 1.5))
+      scale(0.2);
+  }
+}
