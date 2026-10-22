@@ -705,13 +705,13 @@ const AttendancePage = () => {
               <table className="w-max min-w-full border-separate border-spacing-0 text-sm">
                 <thead className="sticky top-0 z-30">
                   <tr>
-                    <th className="sticky left-0 z-40 w-12 min-w-12 border-b border-r bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border) bg-(--) px-2 py-2 text-center text-xs font-bold text-(--text-muted)">
+                    <th className="w-12 min-w-12 border-b border-r bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border) px-2 py-2 text-center text-xs font-bold text-(--text-muted)">
                       S.No.
                     </th>
-                    <th className="sticky left-12 z-40 w-52 min-w-52 border-b border-r bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border)  px-3 py-2 text-left text-xs font-bold uppercase text-(--text-muted)">
+                    <th className="sticky left-0 z-40 w-42 min-w-42 border-b border-r bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border)  px-3 py-2 text-left text-xs font-bold uppercase text-(--text-muted)">
                       Student name
                     </th>
-                    <th className="sticky left-52 z-40 w-20 min-w-20 border-b border-r-2 shadow-2xl border-(--border) bg-(--primary-soft-hover)/50  backdrop-blur-2xl  px-2 py-2 text-center text-xs font-bold uppercase text-(--text-muted)">
+                    <th className="sticky left-35 z-40 w-20 min-w-20 border-b border-r-2 shadow-2xl border-(--border) bg-(--primary-soft-hover)/50  backdrop-blur-2xl  px-2 py-2 text-center text-xs font-bold uppercase text-(--text-muted)">
                       Roll no.
                     </th>
                     {days.map((day) => (
@@ -778,15 +778,15 @@ const AttendancePage = () => {
                   ) : (
                     filteredStudents.map((student, index) => (
                       <tr key={student.id} className="group">
-                        <td className="sticky left-0 z-20 border-b border-r border-(--border)  px-2 py-1 text-center text-xs text-(--text-muted) bg-(--primary-soft-hover)/50 backdrop-blur-2xl">
+                        <td className="border-b border-r border-(--border)  px-2 py-1 text-center text-xs text-(--text-muted) bg-(--primary-soft-hover)/50 backdrop-blur-2xl">
                           {index + 1}
                         </td>
-                        <td className="sticky left-12 z-20 max-w-52 border-b border-r border-(--border) bg-(--primary-soft-hover)/50 backdrop-blur-2xl px-3 py-1.5 font-medium text-(--text) ">
+                        <td className="sticky left-0 z-20 max-w-42 border-b border-r border-(--border) bg-(--primary-soft-hover)/50 backdrop-blur-2xl px-3 py-1.5 font-medium text-(--text) ">
                           <span className="block truncate" title={student.name}>
                             {student.name}
                           </span>
                         </td>
-                        <td className="sticky left-52 z-20 border-b border-r-2 border-(--border) bg-(--primary-soft-hover)/50 shadow-2xl backdrop-blur-2xl px-2 py-1.5 text-center text-xs text-(--text-muted)">
+                        <td className="sticky left-35 z-20 border-b border-r-2 border-(--border) bg-(--primary-soft-hover)/50 shadow-2xl backdrop-blur-2xl px-2 py-1.5 text-center text-xs text-(--text-muted)">
                           {student.rollNo}
                         </td>
                         {days.map((day) => {
@@ -851,11 +851,11 @@ const AttendancePage = () => {
                 {filteredStudents.length > 0 && (
                   <tfoot>
                     <tr>
-                      <td className="sticky bottom-0 left-0 z-20 border-r border-t-2 border-(--border) bg-(--primary-soft-hover)/50 backdrop-blur-2xl" />
-                      <td className="sticky bottom-0 left-12 z-20 border-r border-t-2 bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border) bg px-3 py-2 text-xs font-bold text-(--text)">
+                      <td className=" border-r border-t-2 border-(--border) bg-(--primary-soft-hover)/50 backdrop-blur-2xl" />
+                      <td className="sticky bottom-0 left-0 z-20 border-r border-t-2 bg-(--primary-soft-hover)/50 backdrop-blur-2xl border-(--border) bg px-3 py-2 text-xs font-bold text-(--text)">
                         Daily total
                       </td>
-                      <td className="sticky bottom-0 left-52 z-20 border-r-2 border-t-2 border-(--border) shadow-2xl bg-(--primary-soft-hover)/50 backdrop-blur-2xl" />
+                      <td className="sticky bottom-0 left-35 z-20 border-r-2 border-t-2 border-(--border) shadow-2xl bg-(--primary-soft-hover)/50 backdrop-blur-2xl" />
                       {days.map((day) => (
                         <td
                           key={day.date}

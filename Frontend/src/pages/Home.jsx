@@ -71,7 +71,7 @@ const Home = () => {
             </div>
           </div>
 
-          <nav className="flex gap-2 text-(--text)">
+          <nav className="md:flex gap-2 text-(--text) hidden">
             <NavLink to="/#schools">Find your school</NavLink>
             <NavLink to="/create/organisation">
               Create a school workspace
