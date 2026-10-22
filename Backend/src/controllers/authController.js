@@ -9,6 +9,7 @@ import {
   hashRefreshToken,
   verifyRefreshToken,
 } from "../utils/token.js";
+import "dotenv/config";
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
