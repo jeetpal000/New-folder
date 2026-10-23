@@ -28,6 +28,7 @@ import {
   School,
 } from "lucide-react";
 import { api } from "../../services/api";
+import { formatDate as formatDisplayDate } from "../../utils/date";
 
 const emptyStudent = {
   _id: "",
@@ -57,14 +58,7 @@ const formatCurrency = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-const formatDate = (value) =>
-  value && !Number.isNaN(new Date(value).getTime())
-    ? new Date(value).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-    : "Not provided";
+const formatDate = (value) => formatDisplayDate(value, "Not provided");
 
 const attendanceColors = {
   Present: "#16a34a",
@@ -205,9 +199,11 @@ export default function StudentDetails() {
       const fees = data.fees || {};
       const attendanceHistory = (attendance.records || []).map((item) => ({
         date: formatDate(item.date),
-        day: new Date(item.date).toLocaleDateString("en-IN", {
-          weekday: "long",
-        }),
+        day: item.date
+          ? new Date(item.date).toLocaleDateString("en-IN", {
+              weekday: "long",
+            })
+          : "Not provided",
         status: item.status,
       }));
 

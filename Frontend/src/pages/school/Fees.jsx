@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { IndianRupee, Plus, Receipt, X } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
+import { formatDate } from "../../utils/date";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -198,7 +199,7 @@ const Fees = () => {
                     </p>
                     {account.dueDate && (
                       <p className="mt-1 text-xs text-(--text-muted)">
-                        Due by {new Date(account.dueDate).toLocaleDateString("en-IN")}
+                        Due by {formatDate(account.dueDate)}
                       </p>
                     )}
                     {account.payments?.length > 0 && (
@@ -206,7 +207,7 @@ const Fees = () => {
                         {account.payments.slice(-3).reverse().map((payment) => (
                           <li key={payment._id}>
                             {formatCurrency(payment.amount)} · {payment.method} ·{" "}
-                            {new Date(payment.paidAt).toLocaleDateString("en-IN")}
+                            {formatDate(payment.paidAt)}
                             {payment.receivedBy?.name
                               ? ` · received by ${payment.receivedBy.name}`
                               : ""}

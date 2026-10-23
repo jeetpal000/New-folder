@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Check, ClipboardList, X } from "lucide-react";
 import { api } from "../../services/api";
+import { formatDate } from "../../utils/date";
 
 const AdmissionApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -95,10 +96,10 @@ const AdmissionApplications = () => {
                   <h2 className="font-bold">{application.applicantName}</h2>
                   <p className="mt-1 text-sm text-(--text-muted)">
                     Applying for {application.requestedClass} · Submitted{" "}
-                    {new Date(application.createdAt).toLocaleDateString("en-IN")}
+                    {formatDate(application.createdAt)}
                   </p>
                   <p className="mt-2 text-sm">
-                    DOB {new Date(application.dateOfBirth).toLocaleDateString("en-IN")}
+                    DOB {formatDate(application.dateOfBirth)}
                     {application.gender ? ` · ${application.gender}` : ""}
                   </p>
                   <p className="mt-1 text-sm">

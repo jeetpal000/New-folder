@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CheckCircle2, CreditCard } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
+import { formatDate as formatDisplayDate } from "../../utils/date";
 
 const currency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -10,14 +11,7 @@ const currency = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-const formatDate = (value) =>
-  value
-    ? new Date(value).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "Not available";
+const formatDate = (value) => formatDisplayDate(value, "Not available");
 
 let checkoutScriptPromise;
 const loadCheckoutScript = () => {

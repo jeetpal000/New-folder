@@ -24,6 +24,7 @@ import { Input, Select, Textarea } from "../../components/UI";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils/date";
 
 const Students = () => {
   useEffect(() => {
@@ -65,9 +66,7 @@ const Students = () => {
           gender: student.gender || "",
           status: student.isActive ? "Active" : "Inactive",
           photo: student.photo?.url || "",
-          admissionDate: new Date(student.createdAt).toLocaleDateString(
-            "en-IN",
-          ),
+          admissionDate: formatDate(student.createdAt),
           createdAt: student.createdAt,
         })),
       );

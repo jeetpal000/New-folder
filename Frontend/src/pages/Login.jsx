@@ -37,9 +37,11 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      const user = await initializeAuth();
+      const user = await initializeAuth({ force: true });
       if (!user) {
-        throw new Error("Login succeeded, but the session could not be verified.");
+        throw new Error(
+          "Login succeeded, but the browser did not accept the session cookie. If this browser blocks third-party cookies, configure the app and API on the same site or route API requests through the app's domain.",
+        );
       }
       navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
     } catch (error) {

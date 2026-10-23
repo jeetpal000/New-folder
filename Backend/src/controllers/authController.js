@@ -18,11 +18,16 @@ const loginSchema = z.object({
 
 const getAuthCookieOptions = () => {
   const isProduction = process.env.NODE_ENV === "production";
+  const configuredSameSite = process.env.AUTH_COOKIE_SAME_SITE?.toLowerCase();
+  const sameSite = configuredSameSite || (isProduction ? "none" : "lax");
+  if (!["lax", "strict", "none"].includes(sameSite)) {
+    throw new Error("AUTH_COOKIE_SAME_SITE must be lax, strict, or none");
+  }
 
   return {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction || sameSite === "none",
+    sameSite,
     path: "/",
   };
 };

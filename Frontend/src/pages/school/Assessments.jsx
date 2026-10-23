@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BookOpen, Check, ClipboardList, Plus, Send, X } from "lucide-react";
 import { Input, Select } from "../../components/UI";
 import { api } from "../../services/api";
+import { formatDate } from "../../utils/date";
 import { useAuthStore } from "../../store/authStore";
 
 const assessmentTypes = ["Quiz", "Unit Test", "Mid Term", "Final", "Other"];
@@ -321,9 +322,7 @@ const Assessments = () => {
                 />
                 <AssessmentInfo
                   label="Scheduled"
-                  value={new Date(assessment.scheduledAt).toLocaleDateString(
-                    "en-IN",
-                  )}
+                  value={formatDate(assessment.scheduledAt)}
                 />
                 <AssessmentInfo
                   label="Pass / Maximum"

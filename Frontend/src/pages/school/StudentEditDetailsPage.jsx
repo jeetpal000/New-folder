@@ -3,6 +3,7 @@ import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Input, Select, Textarea } from "../../components/UI";
 import { api } from "../../services/api";
+import { toDateInputValue } from "../../utils/date";
 
 const initialForm = {
   name: "",
@@ -67,9 +68,7 @@ const StudentEditDetailsPage = () => {
           classId: student.classId?._id || "",
           rollNumber: student.rollNumber || "",
           admissionNumber: student.admissionNumber || "",
-          dateOfBirth: student.dateOfBirth
-            ? new Date(student.dateOfBirth).toISOString().slice(0, 10)
-            : "",
+          dateOfBirth: toDateInputValue(student.dateOfBirth),
           gender: student.gender || "",
           phone: student.phone || "",
           email: student.email || "",

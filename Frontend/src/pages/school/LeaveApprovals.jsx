@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Check, ClipboardCheck, Save, X } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
+import { formatDate } from "../../utils/date";
 
 const LeaveApprovals = () => {
   const user = useAuthStore((state) => state.user);
@@ -186,8 +187,7 @@ const LeaveApprovals = () => {
                       request.studentId?.admissionNumber}
                   </p>
                   <p className="mt-3 text-sm">
-                    {new Date(request.fromDate).toLocaleDateString("en-IN")} –{" "}
-                    {new Date(request.toDate).toLocaleDateString("en-IN")}
+                    {formatDate(request.fromDate)} – {formatDate(request.toDate)}
                   </p>
                   <p className="mt-2 whitespace-pre-wrap text-sm">
                     {request.reason}

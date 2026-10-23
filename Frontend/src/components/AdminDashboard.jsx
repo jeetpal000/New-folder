@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import FloatingParticles from "./FloatingParticles/FloatingPartcles";
 import SchoolIdentityCarousel from "./SchoolIdentityCarousel";
+import { formatDate } from "../utils/date";
 import { useAuthStore } from "../store/authStore";
 import { api } from "../services/api";
 
@@ -214,9 +215,7 @@ const AdminDashboard = () => {
                           {fee.dueDate && (
                             <span className="ml-2 text-xs text-(--text-muted)">
                               Due{" "}
-                              {new Date(fee.dueDate).toLocaleDateString(
-                                "en-IN",
-                              )}
+                              {formatDate(fee.dueDate)}
                               {fee.overdue ? " · Overdue" : ""}
                             </span>
                           )}
