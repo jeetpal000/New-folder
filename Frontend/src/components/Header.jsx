@@ -41,10 +41,11 @@ const Header = () => {
           <div
             className="absolute inset-0 h-screen w-full bg-linear-to-br from-[#323232] via-[#212630f2] to-[#303030] backdrop-blur-lg lg:hidden"
             onClick={() => setOpen(false)}
-          />
-          <div className="absolute left-0 top-0 rounded-lg border border-(--border) bg-(--primary-soft-hover)  text-xs shadow-xl lg:hidden">
-            <X size={18} className="absolute top-1/2" />
-            <Sidebar />
+          >
+            <div className="absolute left-0 top-0 rounded-lg border border-(--border) bg-(--primary-soft-hover)  text-xs shadow-xl lg:hidden">
+              <X size={18} className="absolute top-1/2" />
+              <Sidebar />
+            </div>
           </div>
         </>
       )}
