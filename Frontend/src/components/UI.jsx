@@ -1,5 +1,5 @@
 import { Check, Palette, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useThemeStore } from "../store/themeStore";
 
 export const themes = [
@@ -29,6 +29,16 @@ export const themes = [
 export const ThemeButton = () => {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useThemeStore();
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
 
   const changeTheme = (nextTheme) => {
     setTheme(nextTheme);
@@ -62,27 +72,29 @@ export const ThemeButton = () => {
             role="dialog"
             aria-modal="true"
             aria-labelledby="theme-picker-title"
-            className="relative w-full max-w-sm rounded-2xl border border-(--border) bg-(--primary-soft-hover) p-6 text-(--text-primary) shadow-2xl"
+            className="relative w-full h-[70vh] sm:h-auto  max-w-sm rounded-2xl border border-(--border) bg-(--primary-soft-hover) p-6 text-(--text-primary) shadow-2xl overflow-hidden"
             onMouseDown={(event) => event.stopPropagation()}
           >
-            <button
-              type="button"
-              aria-label="Close theme picker"
-              onClick={() => setOpen(false)}
-              className="absolute right-4 top-4 grid size-8 place-items-center rounded-lg text-(--text-secondary) hover:bg-(--surface-hover)"
-            >
-              <X size={17} />
-            </button>
-            <span className="text-[10px] font-bold tracking-[.18em] text-(--primary)">
-              APPEARANCE
-            </span>
-            <h2 id="theme-picker-title" className="mt-2 text-xl font-bold">
-              Choose your theme
-            </h2>
-            <p className="mt-2 text-xs leading-5 text-(--text-secondary)">
-              Select a color system for your workspace.
-            </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="">
+              <button
+                type="button"
+                aria-label="Close theme picker"
+                onClick={() => setOpen(false)}
+                className="absolute right-4 top-4 grid size-8 place-items-center rounded-lg text-(--text-secondary) hover:bg-(--surface-hover)"
+              >
+                <X size={17} />
+              </button>
+              <span className="text-[10px] font-bold tracking-[.18em] text-(--primary)">
+                APPEARANCE
+              </span>
+              <h2 id="theme-picker-title" className="mt-2 text-xl font-bold">
+                Choose your theme
+              </h2>
+              <p className="mt-2 text-xs leading-5 text-(--text-secondary)">
+                Select a color system for your workspace.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 max-h-full overflow-y-auto pb-25 sm:pb-4  scrollbar-none">
               {themes.map((item) => (
                 <ThemeOption
                   key={item.id}

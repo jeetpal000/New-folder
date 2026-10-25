@@ -16,11 +16,7 @@ import {
 export const LoginService = async (data, req) => {
 
   const { email, password } = data;
-
-  // --------------------------------
-  // 1. Find User
-  // --------------------------------
-
+   // 1. Find User  
   const user = await User.findOne({
     email: email.toLowerCase().trim(),
   }).select("+password");
@@ -31,24 +27,14 @@ export const LoginService = async (data, req) => {
       401
     );
   }
-
-
-  // --------------------------------
-  // 2. Check Active User
-  // --------------------------------
-
-  if (!user.isActive) {
+// 2. Check Active User
+if (!user.isActive) {
     throw new AppError(
       "Your account is inactive",
       403
     );
   }
-
-
-  // --------------------------------
   // 3. Verify Password
-  // --------------------------------
-
   const isPasswordValid =
     await argon.verify(
       user.password,
@@ -61,66 +47,15 @@ export const LoginService = async (data, req) => {
       401
     );
   }
-
-
-  // --------------------------------
-  // 4. Generate Access Token
-  // --------------------------------
-
-  const accessToken =
-    generateAccessToken({
-      userId: user._id,
-      organisationId: user.schoolId,
-      roleId: user.roleId,
-    });
-
-
-  // --------------------------------
-  // 5. Generate Refresh Token
-  // --------------------------------
-
-  const refreshToken =
-    generateRefreshToken({
-      userId: user._id,
-    });
-
-
-  // --------------------------------
   // 6. Generate Device ID
-  // --------------------------------
-
-  const deviceId =
-    crypto.randomUUID();
-
-
-  // --------------------------------
-  // 7. Get Device Information
-  // --------------------------------
-
-  const deviceInfo =
-    getDeviceInfo(req);
-
-
-  // --------------------------------
+const deviceId = crypto.randomUUID();
+// 7. Get Device Information
+const deviceInfo = getDeviceInfo(req);
   // 8. Get IP Address
-  // --------------------------------
-
-  const ipAddress =
-    getClientIp(req);
-
-
-  // --------------------------------
-  // 9. Device Name
-  // --------------------------------
-
-  const deviceName =
-    `${deviceInfo.os} - ${deviceInfo.browser}`;
-
-
-  // --------------------------------
+  const ipAddress = getClientIp(req);
+    // 9. Device Name
+  const deviceName = `${deviceInfo.os} - ${deviceInfo.browser}`;
   // 10. Session Expiry
-  // --------------------------------
-
   const expiresAt =
     new Date(
       Date.now() +
@@ -128,38 +63,38 @@ export const LoginService = async (data, req) => {
     );
 
 
-  // --------------------------------
+// 5. Generate Refresh Token
+const refreshToken =
+    generateRefreshToken({
+      userId: user._id.toString(),
+    });
+
   // 11. Create Session
-  // --------------------------------
 
-  await Session.create({
+ const session =  await Session.create({
     userId: user._id,
-
     refreshTokenHash: hashRefreshToken(refreshToken),
-
     deviceId,
-
     deviceName,
-
-    deviceInfo,
-
+    deviceInfo, 
     ipAddress,
-
     lastActive: new Date(),
-
     expiresAt,
   });
 
+// 4. Generate Access Token
+const accessToken =
+    generateAccessToken({
+      userId: user._id.toString(),
+      sessionId: session._id.toString(),
+      organisationId: user.schoolId.toString(),
+      roleId: user.roleId.toString(),
+    });
 
-  // --------------------------------
   // 12. Return
-  // --------------------------------
-
-  return {
+return {
     accessToken,
-
     refreshToken,
-
     user: {
       id: user._id,
       name: user.name,

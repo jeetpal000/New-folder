@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { verifyAccessToken } from "../utils/token.js";
 import { User } from "../models/User.js";
+import { Session } from "../models/Session.js";
 
 export const authenticate = async (req, res, next) => {
   const token = req.cookies?.accessToken;
@@ -34,8 +35,35 @@ export const authenticate = async (req, res, next) => {
       message: "Invalid or expired token",
     });
   }
+  if(!mongoose.isValidObjectId(decoded.sessionId)){
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token"
+    });
+  }
 
   try {
+     // Check whether the session still exists
+    const session = await Session.findOne({
+      _id: decoded.sessionId,
+      userId: decoded.userId,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!session) {
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
+      return res.status(401).json({
+        success: false,
+        message: "Session expired or revoked. Please login again.",
+      });
+    }
+
+    //Fetch User
     const user = await User.findById(decoded.userId)
       .populate("schoolId")
       .populate({
@@ -74,6 +102,10 @@ export const authenticate = async (req, res, next) => {
     }
 
     req.user = user;
+    req.auth = {
+      userId: decoded.userId,
+      sessionId: decoded.sessionId,
+    }
     return next();
   } catch (error) {
     return next(error);

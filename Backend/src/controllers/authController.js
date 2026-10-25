@@ -161,9 +161,10 @@ export const authRefreshController = async (req, res) => {
   }
 
   const accessToken = generateAccessToken({
-    userId: user._id,
-    organisationId: user.schoolId._id,
-    roleId: user.roleId,
+    userId: user._id.toString(),
+    sessionId: session._id.toString(),
+    organisationId: user.schoolId._id.toString(),
+    roleId: user.roleId.toString(),
   });
 
   await Session.updateOne(

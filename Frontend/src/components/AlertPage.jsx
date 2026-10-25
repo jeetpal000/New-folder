@@ -5,7 +5,7 @@ const AlertPage = ({
   description,
   setShowAlertPage,
   id,
-  handleDeleteSubject,
+  handleDeleteItem,
 }) => {
   return (
     <div className="bg-(--primary-soft)/10 backdrop-blur-2xl border border-(--danger)/50 rounded-xl hover:shadow-2xl p-5 hover:border(--danger)">
@@ -22,7 +22,7 @@ const AlertPage = ({
         <button
           className="border border-(--danger) text-(--surface)/70 px-4 py-2 rounded-xl bg-(--danger)/40 hover:bg-(--danger) font-semibold hover:border-(--danger) hover:text-(--surface) transition-all duration-200 cursor-pointer hover:-translate-y-1 active:scale(95)"
           onClick={() => {
-            handleDeleteSubject(id);
+            handleDeleteItem(id);
             setShowAlertPage(false);
           }}
         >

@@ -7,7 +7,7 @@ import {
   refreshAccessTokenController,
 } from "../controllers/authController.js";
 import { authenticate } from "../middleware/auth.js";
-import { getCurrentUser } from "../controllers/userController.js";
+import { getAllSessionData, getCurrentUser, deleteSessionItem } from "../controllers/userController.js";
 import { authenticationLimiter } from "../lib/apiLimiter.js";
 
 const authRouter = Router();
@@ -25,6 +25,8 @@ authRouter.post(
 authRouter.post("/organisations/refresh", authRefreshController);
 authRouter.post("/refresh-token", refreshAccessTokenController);
 authRouter.post("/logout", authLogoutController);
+authRouter.delete("/delete-session/:id", authenticate, deleteSessionItem)
 authRouter.get(["/me", "/organisation/me"], authenticate, getCurrentUser);
+authRouter.get("/get-all-session", authenticate, getAllSessionData);
 
 export default authRouter;

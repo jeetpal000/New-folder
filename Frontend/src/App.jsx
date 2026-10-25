@@ -21,6 +21,7 @@ import StudentDetailsPage from "./pages/school/StudentDetailsPage.jsx";
 import StudentEditDetailsPage from "./pages/school/StudentEditDetailsPage.jsx";
 import Assessments from "./pages/school/Assessments.jsx";
 import Billing from "./pages/school/Billing.jsx";
+import TeacherDetails from "./pages/school/TeacherDetailsPage.jsx";
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
                 </PermissionRoute>
               }
             />
+            <Route path="/teachers/details/:id" element={<TeacherDetails />} />
             <Route path="/settings" element={<Settings />} />
             <Route
               path="/billing"
@@ -95,6 +97,7 @@ const App = () => {
                 </PermissionRoute>
               }
             />
+
             <Route
               path="/admission-applications"
               element={
@@ -129,13 +132,6 @@ const App = () => {
                 </PermissionRoute>
               }
             />
-            {/*<Route path="/students/new" element={<StudentForm />} />
-          <Route path="/students/:id/edit" element={<StudentForm edit />} />
-          <Route path="/teachers/new" element={<TeacherForm />} />
-          <Route path="/teachers/:id/edit" element={<TeacherForm edit />} />
-          <Route path="/fees" element={<Fees />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} /> */}
           </Route>
         </Route>
 

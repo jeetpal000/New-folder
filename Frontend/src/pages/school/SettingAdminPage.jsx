@@ -7,6 +7,8 @@ import {
   Eye,
   EyeOff,
   KeyRound,
+  Laptop,
+  Laptop2,
   Lock,
   LucideSettings,
   Mail,
@@ -19,6 +21,7 @@ import {
   School,
   Settings2,
   ShieldCheck,
+  ShieldHalf,
   Smartphone,
   Sun,
   Trash2,
@@ -39,8 +42,7 @@ const Settings = () => {
   }, []);
 
   const user = useAuthStore((state) => state.user);
-  const isAdmin =
-    (user?.roleId?.role || user?.roleId?.name) === "Admin";
+  const isAdmin = (user?.roleId?.role || user?.roleId?.name) === "Admin";
 
   const [activeSection, setActiveSection] = useState(() =>
     isAdmin ? "school" : "appearance",
@@ -155,9 +157,7 @@ const Settings = () => {
                 saved={saved}
               />
             )}
-            {isAdmin && activeSection === "subject" && (
-              <AddSubjectSettings />
-            )}
+            {isAdmin && activeSection === "subject" && <AddSubjectSettings />}
 
             {activeSection === "security" && (
               <SecuritySettings onSave={handleSave} saved={saved} />
@@ -200,7 +200,7 @@ const SettingsSidebar = ({ activeSection, setActiveSection, isAdmin }) => {
     },
     {
       id: "security",
-      label: "Security",
+      label: "Security check in",
       icon: ShieldCheck,
     },
     {
@@ -226,9 +226,7 @@ const SettingsSidebar = ({ activeSection, setActiveSection, isAdmin }) => {
       icon: NotebookTabs,
     },
   ];
-  const items = isAdmin
-    ? [...adminItems, ...personalItems]
-    : personalItems;
+  const items = isAdmin ? [...adminItems, ...personalItems] : personalItems;
 
   return (
     <div className="h-fit overflow-x-auto scrollbar-none rounded-2xl border border-(--border) bg-linear-125 backdrop-blur-sm from-(--card-gradient-1)/50 to-(--card-gradient-2)/10 p-2 shadow-sm">
@@ -448,7 +446,47 @@ const AccountSettings = ({ accountData, onChange, onSave, saved }) => {
 const SecuritySettings = ({ onSave, saved }) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [showAlertPage, setShowAlertPage] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [sessions, setSessions] = useState(null);
+
+  const allSessionData = async () => {
+    const res = await api.get("/get-all-session");
+    const data = res.data.sessions || [];
+    setSessions(data);
+  };
+
+  useEffect(() => {
+    allSessionData();
+  }, []);
+  console.log(sessions);
+
+  useEffect(() => {
+    if (!showAlertPage) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showAlertPage]);
+
+  const handleDeleteSession = async (id) => {
+    try {
+      await api.delete(`/delete-session/${id}`, {
+        params: { sessionId: selectedSessionId },
+      });
+      await allSessionData();
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Could not logout from that device.",
+      );
+    } finally {
+      setShowAlertPage(false);
+    }
+  };
 
   return (
     <SettingsCard
@@ -497,32 +535,87 @@ const SecuritySettings = ({ onSave, saved }) => {
 
       <SectionTitle icon={Smartphone} title="Active Sessions" />
 
-      <div className="flex items-center justify-between rounded-xl border border-(--border) p-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-(--primary-soft) p-2.5 text-(--primary)">
-            <Smartphone size={19} />
-          </div>
+      <div className="flex flex-col  gap-4 items-center justify-between rounded-xl border border-(--border) p-4">
+        {sessions &&
+          sessions.map((session) => (
+            <div
+              key={session._id}
+              className="flex items-center justify-between w-full gap-3"
+            >
+              <div className="flex gap-2 items-center">
+                <div className="rounded-xl bg-(--primary-soft) p-2.5 text-(--primary)">
+                  {session.deviceInfo.device === "Desktop" ? (
+                    <Laptop size={19} />
+                  ) : (
+                    <Smartphone size={19} className="shrink-0" />
+                  )}
+                </div>
 
-          <div>
-            <p className="text-sm font-semibold text-(--text)">
-              Current Device
-            </p>
+                <div>
+                  <p className="text-sm font-semibold text-(--text)">
+                    {`${session.deviceInfo.os}  ${session.deviceInfo.device}`}
+                  </p>
 
-            <p className="text-xs text-(--text-muted)">
-              This device • Active now
-            </p>
-          </div>
-        </div>
+                  <p className="text-xs text-(--text-muted)">
+                    {session.isCurrentDevice === true && "This device"}•{" "}
+                    {new Date(session.lastActive).toLocaleString("en-IN", {
+                      timeZone: "Asia/Kolkata",
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+                  </p>
+                </div>
+              </div>
 
-        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600">
-          Active
-        </span>
+              <span className="">
+                {session.isCurrentDevice === true ? (
+                  <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600">
+                    Active Device
+                  </span>
+                ) : (
+                  <button
+                    className="flex gap-1 items-center border border-(--danger) px-2.5 py-1 text-(--danger) rounded-full hover:bg-(--danger)/50 hover:text-(--surface) hover:-translate-y-0.5 transition-all duration-300 "
+                    onClick={() => {
+                      setShowAlertPage(true);
+                      setSelectedSessionId(session._id);
+                    }}
+                  >
+                    {" "}
+                    <Trash2 size={18} /> Delete
+                  </button>
+                )}
+              </span>
+            </div>
+          ))}
       </div>
 
       <button className="text-sm font-medium text-red-500 hover:underline">
         Sign out from all other devices
       </button>
 
+      {showAlertPage && (
+        <div
+          className="absolute inset-0  z-99999  bg-black/30 backdrop-blur-2xl flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowAlertPage(false);
+            }
+          }}
+        >
+          <AlertPage
+            title="Logout form device"
+            description="This device will no longer be available for this organisation."
+            setShowAlertPage={setShowAlertPage}
+            id={selectedSessionId}
+            handleDeleteItem={handleDeleteSession}
+          />
+        </div>
+      )}
       <SaveBar onSave={onSave} saved={saved} />
     </SettingsCard>
   );
@@ -668,7 +761,9 @@ const AddSubjectSettings = () => {
           : records[0]?._id || "",
       );
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Could not load classes.");
+      setErrorMessage(
+        error.response?.data?.message || "Could not load classes.",
+      );
     }
   };
 
@@ -686,7 +781,9 @@ const AddSubjectSettings = () => {
         })),
       );
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Could not load subjects.");
+      setErrorMessage(
+        error.response?.data?.message || "Could not load subjects.",
+      );
     }
   };
 
@@ -714,7 +811,9 @@ const AddSubjectSettings = () => {
       setSection("");
       setCourse("");
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Could not create class.");
+      setErrorMessage(
+        error.response?.data?.message || "Could not create class.",
+      );
     }
   };
 
@@ -723,8 +822,12 @@ const AddSubjectSettings = () => {
     const name = subjectName.trim();
     if (!name) return;
     if (
-      savedSubjects.some((subject) => subject.name.toLowerCase() === name.toLowerCase()) ||
-      pendingSubjects.some((subject) => subject.toLowerCase() === name.toLowerCase())
+      savedSubjects.some(
+        (subject) => subject.name.toLowerCase() === name.toLowerCase(),
+      ) ||
+      pendingSubjects.some(
+        (subject) => subject.toLowerCase() === name.toLowerCase(),
+      )
     ) {
       setErrorMessage("This subject is already added to the selected class.");
       return;
@@ -739,17 +842,16 @@ const AddSubjectSettings = () => {
     setIsSaving(true);
     setErrorMessage("");
     try {
-      await api.post(
-        "/add-subject",
-        {
-          classId: selectedClassId,
-          subjects: pendingSubjects,
-        },
-      );
+      await api.post("/add-subject", {
+        classId: selectedClassId,
+        subjects: pendingSubjects,
+      });
       setPendingSubjects([]);
       await getAllSubject(selectedClassId);
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Could not save subjects.");
+      setErrorMessage(
+        error.response?.data?.message || "Could not save subjects.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -762,7 +864,9 @@ const AddSubjectSettings = () => {
       });
       await getAllSubject(selectedClassId);
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Could not remove subject.");
+      setErrorMessage(
+        error.response?.data?.message || "Could not remove subject.",
+      );
     } finally {
       setShowAlertPage(false);
     }
@@ -774,7 +878,10 @@ const AddSubjectSettings = () => {
       title="Classes & Subjects"
       description="Create classes by section and course, then add subjects to each class."
     >
-      <SectionTitle icon={School} title="1. Create class by section and course" />
+      <SectionTitle
+        icon={School}
+        title="1. Create class by section and course"
+      />
       <form onSubmit={handleAddClass} className="grid gap-3 sm:grid-cols-4">
         <Input
           required
@@ -814,16 +921,25 @@ const AddSubjectSettings = () => {
                 : "border-(--border) bg-(--primary-soft-hover)"
             }`}
           >
-            <span className="font-semibold">{record.name} - {record.section}</span>
-            <span className="ml-2 text-xs text-(--text-muted)">{record.course}</span>
+            <span className="font-semibold">
+              {record.name} - {record.section}
+            </span>
+            <span className="ml-2 text-xs text-(--text-muted)">
+              {record.course}
+            </span>
           </button>
         ))}
         {classes.length === 0 && (
-          <p className="text-sm text-(--text-muted)">Create a class to start adding subjects.</p>
+          <p className="text-sm text-(--text-muted)">
+            Create a class to start adding subjects.
+          </p>
         )}
       </div>
 
-      <SectionTitle icon={NotebookPen} title="2. Add subjects to selected class" />
+      <SectionTitle
+        icon={NotebookPen}
+        title="2. Add subjects to selected class"
+      />
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <Select
           value={selectedClassId}
@@ -860,12 +976,19 @@ const AddSubjectSettings = () => {
           <p className="text-sm font-medium">Subjects to save</p>
           <ul className="flex flex-wrap gap-2">
             {pendingSubjects.map((name) => (
-              <li key={name} className="flex items-center gap-2 rounded-lg border border-(--border) bg-(--primary-soft) px-3 py-2 text-sm">
+              <li
+                key={name}
+                className="flex items-center gap-2 rounded-lg border border-(--border) bg-(--primary-soft) px-3 py-2 text-sm"
+              >
                 {name}
                 <button
                   type="button"
                   aria-label={`Remove ${name}`}
-                  onClick={() => setPendingSubjects((items) => items.filter((item) => item !== name))}
+                  onClick={() =>
+                    setPendingSubjects((items) =>
+                      items.filter((item) => item !== name),
+                    )
+                  }
                 >
                   <X size={15} />
                 </button>
@@ -883,12 +1006,19 @@ const AddSubjectSettings = () => {
         </div>
       )}
 
-      <SectionTitle icon={Check} title="Subjects available for selected class" />
+      <SectionTitle
+        icon={Check}
+        title="Subjects available for selected class"
+      />
       <div className="mt-3">
         {!selectedClassId ? (
-          <p className="text-sm text-(--text-muted)">Select a class to view its subjects.</p>
+          <p className="text-sm text-(--text-muted)">
+            Select a class to view its subjects.
+          </p>
         ) : savedSubjects.length === 0 ? (
-          <p className="text-sm text-(--text-muted)">No subjects added to this class yet.</p>
+          <p className="text-sm text-(--text-muted)">
+            No subjects added to this class yet.
+          </p>
         ) : (
           <ul className="flex flex-wrap gap-2">
             {savedSubjects.map((subject) => (
@@ -915,7 +1045,10 @@ const AddSubjectSettings = () => {
       </div>
 
       {errorMessage && (
-        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-600">
+        <p
+          role="alert"
+          className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-600"
+        >
           {errorMessage}
         </p>
       )}
@@ -932,7 +1065,7 @@ const AddSubjectSettings = () => {
           <AlertPage
             title="Remove subject from this class?"
             description="This subject will no longer be available for this class."
-            handleDeleteSubject={handleDeleteSubject}
+            handleDeleteItem={handleDeleteSubject}
             id={selectedSubjectId}
             setShowAlertPage={setShowAlertPage}
           />

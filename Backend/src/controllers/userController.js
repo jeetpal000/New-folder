@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { Session } from "../models/Session.js";
 import UserPermission from "../models/UserPermission.js";
 import { getRoleName } from "../utils/role.js";
 
@@ -32,3 +34,56 @@ export const getCurrentUser = async (req, res) => {
     },
   });
 };
+
+export const getAllSessionData = async (req, res, next) => {
+  try {
+    const userId = req.auth.userId;
+    const currentSessionId = req.auth.sessionId;
+
+    const sessions = await Session.find({ userId })
+      .select("-refreshTokenHash")
+      .sort({ lastActive: -1 })
+      .lean();
+
+    const result = sessions.map((session) => ({
+      ...session,
+      isCurrentDevice:
+        String(session._id) === String(currentSessionId),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      sessions: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSessionItem  = async(req, res, next)=>{
+  try {
+    const {id} = req.params;
+
+    if(!mongoose.isValidObjectId(id)){
+      return res.status(400).json({success: false, message: "Invalid session or school id"});
+    }
+
+    const deleteSession = await Session.findOneAndDelete({_id: id});
+
+    if(!deleteSession) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found",
+      })
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Session deleted successfully"
+      });
+    
+  } catch (error) {
+    console.log("Session Deleted Error: ", error);
+    next(error);
+  }
+}
