@@ -37,7 +37,7 @@ const Sidebar = () => {
     .slice(0, 2)
     .toUpperCase();
   return (
-    <aside className="hidden w-62 shrink-0 border-r border-(--border) bg-(--primary-soft)/30 backdrop-blur-xl  p-4 lg:flex lg:flex-col h-screen overflow-auto relative scrollbar-none">
+    <aside className="w-62 shrink-0 border-r border-(--border) bg-(--primary-soft)/30 backdrop-blur-xl  p-4 h-screen overflow-auto relative scrollbar-none">
       <div
         className="sticky -top-3 w-full flex items-center gap-2 bg-(--primary-soft-hover)/70 backdrop-blur-xl cursor-pointer hover:bg-(--primary-soft-hover) shadow-2xl rounded"
         onClick={(e) => {
@@ -105,12 +105,12 @@ const Sidebar = () => {
       </nav>
 
       <div className="mt-auto rounded-xl bg-blue-50 p-4 dark:bg-blue-950/40">
-        <BookOpen size={18} className="text-[var(--primary)]" />
+        <BookOpen size={18} className="text-(--primary)" />
         <strong className="mt-2 block text-xs">Need a hand?</strong>
-        <p className="mt-1 text-[10px] leading-4 text-[var(--text-secondary)]">
+        <p className="mt-1 text-[10px] leading-4 text-(--text-secondary)">
           Visit the help center for quick answers.
         </p>
-        <button className="mt-3 text-[11px] font-bold text-[var(--primary)]">
+        <button className="mt-3 text-[11px] font-bold text-(--primary)">
           Open help center →
         </button>
       </div>
