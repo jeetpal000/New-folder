@@ -356,7 +356,7 @@ const Students = () => {
         </div>
 
         {/* Mobile Cards */}
-        <div className="space-y-3 lg:hidden">
+        <div className="space-y-3 lg:hidden mt-5">
           {filteredStudents.length > 0 ? (
             filteredStudents.map((student) => (
               <StudentMobileCard key={student.id} student={student} />
@@ -497,8 +497,12 @@ const StudentRow = ({ student }) => {
 /* -------------------------------------------------------------------------- */
 
 const StudentMobileCard = ({ student }) => {
+  const navigate = useNavigate();
   return (
-    <div className="rounded-2xl border border-(--border) bg-(--primary-soft) hover:(--primary-soft-hover) p-4 shadow-sm">
+    <div
+      className="rounded-2xl border border-(--border) bg-(--primary-soft) hover:(--primary-soft-hover) p-4 shadow-sm"
+      onClick={() => navigate(`/students/details/${student.id}`)}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <Avatar name={student.name} photo={student.photo} />
@@ -506,16 +510,14 @@ const StudentMobileCard = ({ student }) => {
           <div>
             <p className="font-semibold text-(--foreground)">{student.name}</p>
 
-            <p className="text-xs text-(--muted-foreground)]">{student.id}</p>
+            {/* <p className="text-xs text-(--muted-foreground)]">{student.id}</p> */}
           </div>
         </div>
 
-        <button className="rounded-lg p-1.5 text-(--muted-foreground) hover:bg-(--background)]">
-          <MoreVertical size={18} />
-        </button>
+        <StatusBadge status={student.status} />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-3 gap-3">
         <InfoItem
           label="Class"
           value={`${student.class} - ${student.section}`}
@@ -528,14 +530,12 @@ const StudentMobileCard = ({ student }) => {
         <InfoItem label="Admission" value={student.admissionDate} />
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-(--border) pt-3">
-        <StatusBadge status={student.status} />
-
+      {/* <div className="mt-4 flex items-center justify-between border-t border-(--border) pt-3">
         <div className="flex gap-1">
           <ActionButton icon={Eye} title="View" />
           <ActionButton icon={Edit3} title="Edit" />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

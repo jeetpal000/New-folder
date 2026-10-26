@@ -174,15 +174,15 @@ const AdminDashboard = () => {
             {visibleDues.length > 0 && (
               <section
                 aria-label="Outstanding student fee alerts"
-                className="rounded-2xl border border-(--warning) bg-(--danger)/40 backdrop-blur-md p-5 sm:p-6"
+                className="rounded-2xl border border-(--warning) bg-(--danger)/10 backdrop-blur-lg backdrop-blur-md p-5 sm:p-6"
               >
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="flex items-center gap-2 font-bold text-(--warning) ">
+                    <h2 className="flex items-center gap-2 font-bold text-(--danger) ">
                       <CircleAlert size={19} />
                       Fees pending
                     </h2>
-                    <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
+                    <p className="mt-1 text-sm text-(--text)">
                       Students with unpaid balances. Dismiss an alert with ×.
                     </p>
                   </div>
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
                   {visibleDues.map((fee) => (
                     <article
                       key={fee.id}
-                      className="flex items-start justify-between gap-3 rounded-xl border border-amber-200 bg-white/80 p-4 dark:border-amber-900 dark:bg-black/10"
+                      className="flex items-start justify-between gap-3 rounded-xl border border-(--border) p-4 "
                     >
                       <div className="min-w-0">
                         <p className="truncate font-semibold">
@@ -214,8 +214,7 @@ const AdminDashboard = () => {
                           <strong>{formatCurrency(fee.dueAmount)}</strong>
                           {fee.dueDate && (
                             <span className="ml-2 text-xs text-(--text-muted)">
-                              Due{" "}
-                              {formatDate(fee.dueDate)}
+                              Due {formatDate(fee.dueDate)}
                               {fee.overdue ? " · Overdue" : ""}
                             </span>
                           )}
@@ -230,7 +229,7 @@ const AdminDashboard = () => {
                             new Set(current).add(String(fee.id)),
                           )
                         }
-                        className="shrink-0 rounded-lg p-1.5 text-(--text-muted) hover:bg-amber-100 hover:text-(--text) dark:hover:bg-amber-900/40"
+                        className="shrink-0 rounded-lg p-1.5 text-(--text-muted) bg-(--danger)/20 hover:bg-(--danger) hover:text-(--surface)"
                       >
                         <X size={18} />
                       </button>

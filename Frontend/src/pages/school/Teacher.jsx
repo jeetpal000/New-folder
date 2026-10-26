@@ -23,6 +23,7 @@ import {
 import { Input, Label, Select } from "../../components/UI";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const Teachers = () => {
   useEffect(() => {
@@ -457,8 +458,12 @@ const TeacherStat = ({ title, value, icon: Icon }) => {
 /* ========================================================= */
 
 const TeacherRow = ({ teacher }) => {
+  const navigate = useNavigate();
   return (
-    <tr className="border-b border-(--border) last:border-0 hover:bg-(--glass-bg)">
+    <tr
+      className="border-b border-(--border) last:border-0 hover:bg-(--glass-bg)"
+      onClick={() => navigate(`/teachers/details/${teacher.id}`)}
+    >
       <td className="px-5 py-4">
         <div className="flex items-center gap-3 text-(--ṭext)">
           <Avatar name={teacher.name} />

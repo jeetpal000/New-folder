@@ -35,7 +35,7 @@ const SchoolIdentityCarousel = () => {
   return (
     <section
       aria-label={`${schoolName} school identity`}
-      className="relative isolate flex min-h-52 items-end overflow-hidden rounded-3xl border border-(--border) bg-linear-to-tl from-(--card-gradient-1)/70 via-(--card-gradient-2) to-(--card-gradient-1)/70 p-6 text-white shadow-xl sm:min-h-64 sm:p-9"
+      className="relative isolate flex min-h-52 items-end overflow-hidden rounded-3xl border border-(--border) bg-linear-to-tl from-(--primary)/80 via-(--card-gradient-2)/70 to-(--primary)/80 p-6 text-white shadow-xl sm:min-h-64 sm:p-9"
     >
       {slides.length > 0 && !imageFailed && (
         <img

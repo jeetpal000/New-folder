@@ -317,7 +317,7 @@ export default function StudentDetails() {
   }
 
   return (
-    <div className="min-h-screen border-2 rounded-lg border-(--border) bg-white/20 backdrop-blur-lg p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen border-2 rounded-lg border-(--border) bg-white/20 backdrop-blur-lg p-2 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* TOP NAVIGATION */}
 
@@ -475,7 +475,7 @@ export default function StudentDetails() {
 
         {/* TABS */}
 
-        <div className="overflow-x-auto border-b border-slate-200">
+        <div className="overflow-x-auto border lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:pl-5 pt-3 rounded-full border-(--primary) scrollbar-none drop-shadow-2xl ">
           <div className="flex min-w-max gap-6">
             {tabs.map((tab) => (
               <button
@@ -483,7 +483,7 @@ export default function StudentDetails() {
                 onClick={() => setActiveTab(tab)}
                 className={`border-b-2 px-1 pb-3 text-sm font-semibold transition ${
                   activeTab === tab
-                    ? "border-blue-600 text-blue-600"
+                    ? "border-(--primary) text-(--primary)"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >

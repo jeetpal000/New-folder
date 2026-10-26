@@ -16,13 +16,13 @@ const configureCloudinary = () => {
   });
 };
 
-export const uploadStudentPhoto = (file, schoolId) => {
+export const uploadStudentPhoto = (file, schoolId, folder = "students") => {
   configureCloudinary();
 
   return new Promise((resolve, reject) => {
     const upload = cloudinary.uploader.upload_stream(
       {
-        folder: `students/${schoolId}`,
+        folder: `${folder}/${schoolId}`,
         resource_type: "image",
       },
       (error, result) => {

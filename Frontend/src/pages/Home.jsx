@@ -62,7 +62,7 @@ const Home = () => {
         <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-1rem)] max-w-7xl -translate-x-1/2 rounded-2xl border border-(--glass-border) bg-(--glass-bg)/50 backdrop-blur-xl  shadow-[0_8px_20px_var(--shadow-xl)] transition-all duration-300 flex justify-between items-center">
           <div className="flex h-16 items-center justify-between px-5">
             <div className="flex items-center gap-2">
-              <div className=" flex h-10 w-10 items-center justify-center rounded-md bg-(--primary) text-lg font-bold text-white  shadow-[0_6px_20px_var(--shadow-color)]">
+              <div className=" flex h-10 w-10 items-center justify-center rounded-md bg-(--primary) text-lg font-bold text-white  shadow-[0_6px_20px_var(--shadow-color)">
                 N
               </div>
               <span className="text-xl font-bold text-(--text)">
@@ -96,7 +96,7 @@ const Home = () => {
           </div>
         </header>
 
-        <section className="mt-25 min-h-screen">
+        <section className="mt-25 ">
           <div className="mx-auto max-w-4xl text-center">
             {/* Badge */}
 
