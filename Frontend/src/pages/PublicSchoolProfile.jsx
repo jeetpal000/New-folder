@@ -191,7 +191,7 @@ const PublicSchoolProfile = () => {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-(--primary)">
                 School profile
               </p>
-              <h1 className="mt-1 text-3xl font-extrabold">
+              <h1 className="mt-1 text-3xl font-extrabold text-(--text)">
                 {school.schoolName}
               </h1>
               <p className="mt-2 text-sm text-(--text-muted)">
@@ -205,7 +205,7 @@ const PublicSchoolProfile = () => {
                   .join("▪️")}
               </p>
               {school.address && (
-                <p className="mt-2 text-sm">
+                <p className="mt-2 text-sm text-(--text)">
                   {[school.address, school.city, school.state, school.pincode]
                     .filter(Boolean)
                     .join(", ")}
@@ -213,7 +213,7 @@ const PublicSchoolProfile = () => {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2 sm:min-w-80">
+          <div className="grid grid-cols-3 gap-2 sm:min-w-80 text-(--text)">
             <ProfileMetric
               icon={UsersRound}
               label="Staff"
@@ -234,7 +234,7 @@ const PublicSchoolProfile = () => {
 
         <div className="mt-7 grid gap-6 border-t border-(--border) pt-6 md:grid-cols-2">
           <section>
-            <h2 className="font-bold">School details</h2>
+            <h2 className="font-bold text-(--text)">School details</h2>
             <dl className="mt-3 grid gap-2 text-sm">
               {school.principalName && (
                 <Detail label="Principal" value={school.principalName} />
@@ -257,13 +257,13 @@ const PublicSchoolProfile = () => {
             </dl>
           </section>
           <section>
-            <h2 className="font-bold">Facilities available</h2>
+            <h2 className="font-bold text-(--text)">Facilities available</h2>
             {school.facilities?.length ? (
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {school.facilities.map((facility) => (
                   <li
                     key={facility}
-                    className="flex items-center gap-2 text-sm"
+                    className="flex items-center gap-2 text-sm text-(--text)"
                   >
                     <CheckCircle2
                       size={16}
@@ -282,7 +282,9 @@ const PublicSchoolProfile = () => {
         </div>
 
         <section className="mt-6 border-t border-(--border) pt-6">
-          <h2 className="font-bold">Classes, sections & subjects</h2>
+          <h2 className="font-bold text-(--text)">
+            Classes, sections & subjects
+          </h2>
           {school.classes?.length ? (
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {school.classes.map((item) => (
@@ -290,7 +292,7 @@ const PublicSchoolProfile = () => {
                   key={item._id}
                   className="rounded-xl border border-(--border) bg-linear-125 from-(--card-gradient-1)/50 to-(--card-gradient-2)/10 p-4"
                 >
-                  <h3 className="font-semibold">
+                  <h3 className="font-semibold text-(--text)">
                     {item.name} · Section {item.section}
                   </h3>
                   {item.course && (
@@ -306,7 +308,7 @@ const PublicSchoolProfile = () => {
                       {item.subjects.map((subject) => (
                         <span
                           key={subject}
-                          className="rounded-full bg-(--glass-bg) px-2.5 py-1 text-xs"
+                          className="rounded-full bg-(--glass-bg) px-2.5 py-1 text-xs text-(--text)"
                         >
                           {subject}
                         </span>
@@ -337,7 +339,7 @@ const PublicSchoolProfile = () => {
               key={category}
               className="mt-6 border-t border-(--border) pt-6"
             >
-              <h2 className="font-bold">{title}</h2>
+              <h2 className="font-bold text-(--text)">{title}</h2>
               <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {highlights.map((item) => (
                   <article
@@ -353,7 +355,9 @@ const PublicSchoolProfile = () => {
                       />
                     )}
                     <div className="p-4">
-                      <h3 className="font-semibold">{item.title}</h3>
+                      <h3 className="font-semibold text-(--text)">
+                        {item.title}
+                      </h3>
                       {item.description && (
                         <p className="mt-2 whitespace-pre-line text-sm text-(--text-muted)">
                           {item.description}
@@ -388,7 +392,9 @@ const PublicSchoolProfile = () => {
 
         {activePanel === "admission" ? (
           <div className="mx-auto mt-6 max-w-3xl">
-            <h2 className="text-xl font-bold">Admission application</h2>
+            <h2 className="text-xl font-bold text-(--text)">
+              Admission application
+            </h2>
             {!school.admissionOpen ? (
               <p className="mt-4 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-800">
                 Admissions are currently closed. Please contact the school for
@@ -428,7 +434,7 @@ const PublicSchoolProfile = () => {
                     Gender
                     <Select
                       name="gender"
-                      className="mt-1.5 w-full rounded-xl border border-(--border) bg-(--primary-soft) px-3 py-2.5"
+                      className="mt-1.5 w-full rounded-xl broder border-(--border) bg-(--primary-soft-hover)  px-3 py-2.5"
                     >
                       <option value="">Prefer not to say</option>
                       <option>Male</option>
@@ -492,7 +498,9 @@ const PublicSchoolProfile = () => {
           </div>
         ) : (
           <div className="mx-auto mt-6 max-w-3xl">
-            <h2 className="text-xl font-bold">Student profile and leave</h2>
+            <h2 className="text-xl font-bold text-(--text)">
+              Student profile and leave
+            </h2>
             <p className="mt-1 text-sm text-(--text-muted)">
               Verify the student using roll/admission number, class and date of
               birth. Leave requests go only to that class&apos;s assigned
@@ -505,11 +513,12 @@ const PublicSchoolProfile = () => {
               <Field
                 label="Roll / admission number"
                 name="rollNumber"
+                placeholder="Enter roll number"
                 required
               />
-              <label className="block text-sm font-medium">
+              <label className="block text-sm font-medium text-(--text)">
                 Class and section
-                <select
+                <Select
                   name="classId"
                   required
                   defaultValue=""
@@ -523,7 +532,7 @@ const PublicSchoolProfile = () => {
                       {item.name} · {item.section}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <Field
                 label="Date of birth"
@@ -620,7 +629,7 @@ const ProfileMetric = ({ icon: Icon, label, value }) => (
 const Detail = ({ label, value }) => (
   <div className="flex gap-2">
     <dt className="w-32 shrink-0 text-(--text-muted)">{label}</dt>
-    <dd className="font-medium">{value}</dd>
+    <dd className="font-medium text-(--text)">{value}</dd>
   </div>
 );
 
@@ -632,7 +641,7 @@ const Field = ({
   list,
   placeholder,
 }) => (
-  <label className="block text-sm font-medium">
+  <label className="block text-sm font-medium text-(--text)">
     {label}
     <Input
       name={name}

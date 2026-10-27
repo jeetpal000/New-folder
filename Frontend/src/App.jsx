@@ -22,18 +22,31 @@ import StudentEditDetailsPage from "./pages/school/StudentEditDetailsPage.jsx";
 import Assessments from "./pages/school/Assessments.jsx";
 import Billing from "./pages/school/Billing.jsx";
 import TeacherDetails from "./pages/school/TeacherDetailsPage.jsx";
+import Features from "./pages/Features.jsx";
+import About from "./pages/About.jsx";
+import WebsiteFeedbackInbox from "./pages/WebsiteFeedbackInbox.jsx";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/about" element={<About />} />
         <Route path="/schools/:slug" element={<PublicSchoolProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create/organisation" element={<CreatePage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/admin/website-feedback"
+              element={
+                <PermissionRoute adminOnly>
+                  <WebsiteFeedbackInbox />
+                </PermissionRoute>
+              }
+            />
             <Route
               path="/students"
               element={

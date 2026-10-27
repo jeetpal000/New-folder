@@ -25,7 +25,7 @@ const FloatingParticles = ({ count = 50 }) => {
 
       // Random animation timing
       duration: Math.random() * 8 + 8,
-      delay: Math.random() * 10,
+      // delay: Math.random() * 10,
 
       // Random scale
       scale: Math.random() * 1.5 + 0.5,
@@ -57,7 +57,7 @@ const FloatingParticles = ({ count = 50 }) => {
             "--scale": particle.scale,
 
             animationDuration: `${particle.duration}s`,
-            animationDelay: `${particle.delay}s`,
+            // animationDelay: `${particle.delay}s`,
           }}
         />
       ))}

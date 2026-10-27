@@ -1,5 +1,7 @@
 import {
   ArrowRight,
+  BookOpenCheck,
+  CalendarCheck2,
   Search,
   Sparkles,
   User2,
@@ -8,7 +10,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { ThemeButton } from "../components/UI";
+import { Input, ThemeButton } from "../components/UI";
 import { managementTypes } from "../data/organisationData";
 import FloatingParticles from "../components/FloatingParticles/FloatingPartcles";
 import { api } from "../services/api";
@@ -57,8 +59,9 @@ const Home = () => {
 
   return (
     <main className="max-w-7xl mx-auto ">
-      <FloatingParticles count={80} />
-      <div className="z-50">
+      <FloatingParticles count={28} />
+      <div className="z-50 relative">
+        <div className="absolute right-0 -top-28 -z-10 size-80 rounded-full bg-cyan-400/20 blur-3xl" />
         <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-1rem)] max-w-7xl -translate-x-1/2 rounded-2xl border border-(--glass-border) bg-(--glass-bg)/50 backdrop-blur-xl  shadow-[0_8px_20px_var(--shadow-xl)] transition-all duration-300 flex justify-between items-center">
           <div className="flex h-16 items-center justify-between px-5">
             <div className="flex items-center gap-2">
@@ -71,10 +74,21 @@ const Home = () => {
             </div>
           </div>
 
-          <nav className="md:flex gap-2 text-(--text) hidden">
-            <NavLink to="/#schools">Find your school</NavLink>
-            <NavLink to="/create/organisation">
-              Create a school workspace
+          <nav className="flex items-center gap-2 text-xs font-medium text-(--text) sm:gap-4 sm:text-sm">
+            <NavLink
+              to="/features"
+              className="transition hover:text-(--primary)"
+            >
+              Features
+            </NavLink>
+            <NavLink to="/about" className="transition hover:text-(--primary)">
+              About
+            </NavLink>
+            <NavLink
+              to="/#schools"
+              className="hidden transition hover:text-(--primary) lg:inline"
+            >
+              Schools
             </NavLink>
           </nav>
 
@@ -96,8 +110,9 @@ const Home = () => {
           </div>
         </header>
 
-        <section className="mt-25 ">
-          <div className="mx-auto max-w-4xl text-center">
+        <section className="relative isolate mt-25 overflow-hidden px-4 pb-14 pt-8 sm:px-6 sm:pb-20">
+          <div className="pointer-events-none absolute left-1/2 top-10 -z-10 h-80 w-[min(90vw,900px)] -translate-x-1/2 rounded-full bg-blue-400/10 blur-3xl" />
+          <div className="mx-auto max-w-5xl text-center">
             {/* Badge */}
 
             <div className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-(--border) bg-(--glass-bg) px-4 py-2 text-sm text-(--text-secondary) backdrop-blur-md">
@@ -107,19 +122,18 @@ const Home = () => {
 
             {/* Heading */}
 
-            <h1
-              className="
-                  text-5xl font-extrabold leading-[1.05] text-(--text)  tracking-tight sm:text-6xl lg:text-7xl"
-            >
+            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-(--text) sm:text-6xl lg:text-7xl">
               Manage Your School
-              <span className="block text-(--primary)">Smarter.</span>
+              <span className="block bg-gradient-to-r from-(--primary) to-sky-500 bg-clip-text text-transparent">
+                Smarter.
+              </span>
             </h1>
 
             {/* Description */}
 
-            <p className=" mx-auto mt-7 max-w-2xl text-base leading-7 text-(--text-secondary) sm:text-lg">
-              One platform to manage students, staff, admissions, attendance,
-              fees and academics — all in one place.
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-7 text-(--text-secondary) sm:text-lg">
+              Bring student and staff records, admissions, attendance, fees, and
+              academic workflows together in one clear school workspace.
             </p>
 
             {/* CTA */}
@@ -150,19 +164,24 @@ const Home = () => {
                   Create a school workspace
                 </button>
               )}
-              {!user && authError && (
-                <p className="text-sm text-(--danger)" role="alert">
-                  {authError}
-                </p>
-              )}
-
-              <a
-                href="#schools"
+              <Link
+                to="/features"
                 className="rounded-2xl border border-(--border) bg-(--glass-bg) px-7 py-4 text-(--text) font-semibold backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-(--primary) hover:text-(--primary)"
               >
-                Find your school
-              </a>
+                Explore features
+              </Link>
             </div>
+
+            {!user && authError && (
+              <p
+                className="mx-auto mt-4 w-fit max-w-full rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700"
+                role="alert"
+              >
+                {authError === "Network Error"
+                  ? "We couldn’t reach the server. Please try again in a moment."
+                  : authError}
+              </p>
+            )}
 
             {/* Small trust text */}
 
@@ -171,6 +190,51 @@ const Home = () => {
               <span>✓ Flexible access</span>
               <span>✓ Scalable</span>
             </div>
+          </div>
+        </section>
+
+        <section className="border-y border-(--border) bg-(--primary-soft-hover)/20 px-4 py-8 sm:px-6">
+          <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-3">
+            {[
+              {
+                icon: UsersRound,
+                title: "People in one place",
+                text: "Keep student and staff information organized.",
+              },
+              {
+                icon: CalendarCheck2,
+                title: "Everyday workflows",
+                text: "Coordinate attendance, leave, and school operations.",
+              },
+              {
+                icon: BookOpenCheck,
+                title: "Academic and fee records",
+                text: "Connect assessments, classes, accounts, and payments.",
+              },
+            ].map(({ icon: Icon, title, text }) => (
+              <div
+                key={title}
+                className="flex items-start gap-3 rounded-2xl border border-(--border) bg-(--surface)/80 p-4"
+              >
+                <span className="rounded-xl bg-(--primary-soft) p-2.5 text-(--primary)">
+                  <Icon size={19} />
+                </span>
+                <div>
+                  <h2 className="text-sm font-bold text-(--text)">{title}</h2>
+                  <p className="mt-1 text-xs leading-5 text-(--text-secondary)">
+                    {text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 text-center">
+            <NavLink
+              to="/features"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-(--primary) hover:underline"
+            >
+              See how the platform works <ArrowRight size={16} />
+            </NavLink>
           </div>
         </section>
 
@@ -193,11 +257,11 @@ const Home = () => {
                   size={19}
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-(--text-muted)"
                 />
-                <input
+                <Input
                   value={schoolSearch}
                   onChange={(event) => setSchoolSearch(event.target.value)}
                   placeholder="Search schools, cities or boards"
-                  className="w-full rounded-2xl border border-(--border) bg-(--glass-bg) py-3.5 pl-12 pr-4 text-sm outline-none focus:border-(--primary)"
+                  className="w-full rounded-2xl border border-(--border) bg-(--primary-soft-hover) py-3.5 pl-12 pr-4 text-sm outline-none focus:border-(--primary)"
                 />
               </label>
             </div>
@@ -210,7 +274,7 @@ const Home = () => {
                 {schoolError}
               </p>
             )}
-            {schoolsLoading ? (
+            {schoolError ? null : schoolsLoading ? (
               <p className="py-10 text-center text-sm text-(--text-muted)">
                 Searching schools…
               </p>
@@ -224,7 +288,7 @@ const Home = () => {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h3 className="truncate text-lg font-bold">
+                        <h3 className="truncate text-lg font-bold text-(--text)">
                           {school.schoolName}
                         </h3>
                         <p className="mt-1 text-sm text-(--text-muted)">
@@ -298,12 +362,18 @@ const Home = () => {
             </div>
 
             <div className="text-xs text-(--text-muted)">
-              © 2026 NexaManage. All rights reserved.
+              © {new Date().getFullYear()} NexaManage. All rights reserved.
             </div>
 
             <div className="flex gap-5 text-sm text-(--text-secondary)">
+              <NavLink to="/features" className="hover:text-(--primary)">
+                Features
+              </NavLink>
+              <NavLink to="/about" className="hover:text-(--primary)">
+                About & feedback
+              </NavLink>
               <NavLink to="/#schools" className="hover:text-(--primary)">
-                School directory
+                Find a school
               </NavLink>
               <NavLink to="/login" className="hover:text-(--primary)">
                 Login

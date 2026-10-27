@@ -7,6 +7,7 @@ import Class from "../models/Classes.model.js";
 import Student from "../models/Student.js";
 import AdmissionApplication from "../models/AdmissionApplication.js";
 import StudentLeaveRequest from "../models/StudentLeaveRequest.js";
+import Feedback from "../models/Feedback.js";
 import { Subject } from "../models/Subject.model.js";
 import { getRoleName } from "../utils/role.js";
 import { getClassTeacherAccessScope } from "../utils/classAccess.js";
@@ -38,6 +39,107 @@ const startOfDay = (value) => {
   return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value
     ? null
     : date;
+};
+
+export const submitWebsiteFeedback = async (req, res, next) => {
+  try {
+    const { name, email, phone, topic, message, website } = req.body || {};
+    if (typeof website === "string" && website.trim()) {
+      return res.status(201).json({
+        success: true,
+        message: "Thanks for getting in touch. Your message has been received.",
+      });
+    }
+
+    const normalizedEmail =
+      typeof email === "string" ? email.trim().toLowerCase() : "";
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      name.trim().length > 100 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+      normalizedEmail.length > 254 ||
+      (typeof phone === "string" && phone.trim().length > 30) ||
+      (typeof topic === "string" && topic.trim().length > 100) ||
+      typeof message !== "string" ||
+      !message.trim() ||
+      message.trim().length > 3000
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid name, email, and message to submit feedback",
+      });
+    }
+
+    await Feedback.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: typeof phone === "string" ? phone.trim() : "",
+      topic:
+        typeof topic === "string" && topic.trim()
+          ? topic.trim()
+          : "General feedback",
+      message: message.trim(),
+    });
+    return res.status(201).json({
+      success: true,
+      message: "Thanks for getting in touch. Your message has been received.",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getWebsiteFeedback = async (req, res, next) => {
+  try {
+    const filter = {};
+    if (["New", "Reviewed", "Resolved"].includes(req.query.status)) {
+      filter.status = req.query.status;
+    }
+    const feedback = await Feedback.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+    return res.status(200).json({ success: true, feedback });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateWebsiteFeedback = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid feedback record is required",
+      });
+    }
+    const status = req.body?.status;
+    if (!["New", "Reviewed", "Resolved"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Select a valid feedback status",
+      });
+    }
+    const feedback = await Feedback.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status } },
+      { new: true, runValidators: true },
+    ).lean();
+    if (!feedback) {
+      return res.status(404).json({
+        success: false,
+        message: "Feedback record was not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Feedback status updated",
+      feedback,
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 const getPublicCounts = async (schools) => {
