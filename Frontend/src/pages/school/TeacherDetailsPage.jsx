@@ -432,7 +432,7 @@ export default function TeacherDetailsPage() {
     <main className="mx-auto max-w-6xl space-y-6 sm:px-4 py-6 px-2">
       <style>{`
         @media print {
-          @page { size: 90mm 58mm; margin: 0; }
+          @page {  margin: 2 1; }
           body * { visibility: hidden !important; }
           #teacher-id-card, #teacher-id-card * { visibility: visible !important; }
           #teacher-id-card {
@@ -548,7 +548,7 @@ export default function TeacherDetailsPage() {
 
           <article
             id="teacher-id-card"
-            className="relative mx-auto flex min-h-120 min-w-85 max-w-85 w-85 flex-col overflow-hidden rounded-2xl border border-slate-200  text-slate-800 shadow-2xl bg-(--primary-soft-hover)"
+            className="relative mx-auto flex max-auto h-135 min-h-135 min-w-80 max-w-85 w-80 flex-col overflow-hidden rounded-2xl border border-slate-200  text-slate-800 shadow-2xl bg-(--primary-soft-hover)"
           >
             {/* Top Header */}
             <header className="relative overflow-hidden bg-linear-to-br from-indigo-950 via-indigo-800 to-blue-700 px-5 pb-16 pt-5 text-white">
@@ -586,7 +586,7 @@ export default function TeacherDetailsPage() {
                 </div>
               </div>
 
-              <div className="relative mt-5 flex justify-center">
+              <div className="relative mt-3 flex justify-center">
                 <span className="rounded-full border border-white/25 bg-white/10 px-5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] backdrop-blur-sm">
                   Teaching Staff
                 </span>

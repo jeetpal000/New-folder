@@ -12,7 +12,7 @@ import {
 import { Link, NavLink } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuthStore } from "../store/authStore";
-import { Input, Label, ThemeButton } from "../components/UI";
+import { Input, Label, Select, Textarea, ThemeButton } from "../components/UI";
 import FloatingParticles from "../components/FloatingParticles/FloatingPartcles";
 
 const initialForm = {
@@ -75,14 +75,14 @@ export default function About() {
     <main className="min-h-screen text-slate-900">
       <FloatingParticles count={50} />
       <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-1rem)] max-w-7xl -translate-x-1/2 rounded-2xl border border-(--glass-border) bg-(--glass-bg)/50 backdrop-blur-xl  shadow-[0_8px_20px_var(--shadow-xl)] transition-all duration-300 flex justify-between items-center">
-        <div className="flex h-16 items-center justify-between px-5">
+        <Link to="/" className="flex h-16 items-center justify-between px-5">
           <div className="flex items-center gap-2">
             <div className=" flex h-10 w-10 items-center justify-center rounded-md bg-(--primary) text-lg font-bold text-white  shadow-[0_6px_20px_var(--shadow-color)">
               N
             </div>
             <span className="text-xl font-bold text-(--text)">NexaManage</span>
           </div>
-        </div>
+        </Link>
 
         <nav className="flex items-center gap-3 text-sm font-medium sm:gap-6">
           <Link to="/features" className="text-slate-600 hover:text-indigo-700">
@@ -120,7 +120,7 @@ export default function About() {
         </div>
       </header>
 
-      <section className="relative isolate overflow-hidden  px-4 py-16 text-white sm:px-6 sm:py-24">
+      <section className="relative isolate overflow-hidden  px-4 py-24 text-(--text) sm:px-6 sm:py-24">
         <div className="absolute -right-24 -top-28 -z-10 size-80 rounded-full bg-cyan-400/20 blur-3xl" />
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-bold uppercase tracking-[0.2em]">
@@ -315,35 +315,47 @@ export default function About() {
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-semibold text-slate-700">
-                Phone (optional)
-                <input
+              <div className="">
+                <Label className="text-sm font-semibold text-slate-700">
+                  Phone (optional)
+                </Label>
+                <Input
                   type="tel"
                   maxLength={30}
                   value={form.phone}
                   onChange={updateField("phone")}
                   autoComplete="tel"
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 font-normal outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  className="mt-1.5 w-full rounded-xl border border-(--border) bg-(--primary-soft-hover)"
                 />
-              </label>
-              <label className="text-sm font-semibold text-slate-700">
-                What is this about?
-                <select
+              </div>
+              <div className="">
+                <Label
+                  required
+                  className="text-sm font-semibold text-slate-700"
+                >
+                  What is this about?
+                </Label>
+                <Select
                   value={form.topic}
                   onChange={updateField("topic")}
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 font-normal outline-none transition focus:border-indigo-500"
+                  className="mt-1.5 w-full rounded-xl border border-(--border) bg-(--primary-soft-hover)"
                 >
                   <option>Product feedback</option>
                   <option>Request a demo</option>
                   <option>Question</option>
                   <option>Partnership</option>
                   <option>Other</option>
-                </select>
-              </label>
+                </Select>
+              </div>
             </div>
-            <label className="block text-sm font-semibold text-slate-700">
-              Your message *
-              <textarea
+            <div className="">
+              <Label
+                required
+                className="block text-sm font-semibold text-slate-700"
+              >
+                Your message
+              </Label>
+              <Textarea
                 required
                 minLength={5}
                 maxLength={3000}
@@ -351,12 +363,12 @@ export default function About() {
                 value={form.message}
                 onChange={updateField("message")}
                 placeholder="Tell us what you think or how we can help..."
-                className="mt-1.5 w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-3 font-normal outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                className="mt-1.5 w-full resize-y rounded-xl border border-(--border) bg-(--primary-soft-hover)"
               />
               <span className="mt-1 block text-right text-xs font-normal text-slate-500">
                 {form.message.length}/3000
               </span>
-            </label>
+            </div>
             <div
               aria-hidden="true"
               className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
@@ -374,7 +386,7 @@ export default function About() {
             <button
               type="submit"
               disabled={sending}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--primary)/90 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-(--primary) disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Send size={17} /> {sending ? "Sending..." : "Send feedback"}
             </button>

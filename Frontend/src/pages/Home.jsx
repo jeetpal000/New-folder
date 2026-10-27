@@ -2,6 +2,7 @@ import {
   ArrowRight,
   BookOpenCheck,
   CalendarCheck2,
+  Menu,
   Search,
   Sparkles,
   User2,
@@ -26,6 +27,7 @@ const Home = () => {
   const [schools, setSchools] = useState([]);
   const [schoolError, setSchoolError] = useState("");
   const [schoolsLoading, setSchoolsLoading] = useState(true);
+  const [menu, setMenu] = useState(false);
 
   const searchSchools = useCallback(async () => {
     setSchoolsLoading(true);
@@ -74,7 +76,9 @@ const Home = () => {
             </div>
           </div>
 
-          <nav className="flex items-center gap-2 text-xs font-medium text-(--text) sm:gap-4 sm:text-sm">
+          <nav
+            className={`${menu ? " absolute  -right-5 top-16  space-y-2 flex pl-10 flex-col gap-2 bg-(--primary-soft) px-2 py-2 w-[70%]" : " items-center gap-2 text-xs font-medium text-(--text) sm:gap-4 sm:text-sm hidden sm:flex "}`}
+          >
             <NavLink
               to="/features"
               className="transition hover:text-(--primary)"
@@ -92,7 +96,9 @@ const Home = () => {
             </NavLink>
           </nav>
 
-          <div className="flex items-center gap-2 pr-2">
+          <div
+            className={` ${menu ? "absolute -right-5 top-33 flex pl-10 flex-col space-y-2 bg-(--primary-soft) px-2 py-4 w-[70%] " : "sm:flex hidden items-center gap-2 pr-2"}`}
+          >
             <ThemeButton />
             <div className="relative group">
               <NavLink
@@ -107,6 +113,21 @@ const Home = () => {
                 </span>
               </NavLink>
             </div>
+          </div>
+          <div className="sm:hidden pr-2">
+            {menu ? (
+              <X
+                size={40}
+                className="px-1.5 py-2 border border-(--border) rounded-tr-md rounded-bl-md"
+                onClick={() => setMenu(!menu)}
+              />
+            ) : (
+              <Menu
+                size={40}
+                className="px-1.5 py-2 border border-(--border) rounded-tr-md rounded-bl-md"
+                onClick={() => setMenu(!menu)}
+              />
+            )}
           </div>
         </header>
 
