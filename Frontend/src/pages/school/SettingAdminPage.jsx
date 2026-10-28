@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  ImagePlus,
   KeyRound,
   Laptop,
   Laptop2,
@@ -16,6 +17,7 @@ import {
   NotebookPen,
   NotebookTabs,
   Palette,
+  Pencil,
   Plus,
   Save,
   School,
@@ -25,6 +27,7 @@ import {
   Smartphone,
   Sun,
   Trash2,
+  Upload,
   User,
   X,
 } from "lucide-react";
@@ -36,12 +39,32 @@ import { useThemeStore } from "../../store/themeStore";
 import { api } from "../../services/api";
 import AlertPage from "../../components/AlertPage";
 
+const getSchoolSettings = (school = {}) => ({
+  schoolName: school.schoolName || "",
+  schoolCode: school.schoolCode || "",
+  schoolEmail: school.schoolEmail || "",
+  schoolPhone: school.schoolPhone || "",
+  board: school.board || "",
+  academicSession: school.academicSession || "",
+  principalName: school.principalName || "",
+  affiliationNumber: school.affiliationNumber || "",
+  establishedYear: school.establishedYear ?? "",
+  address: school.address || "",
+  city: school.city || "",
+  state: school.state || "",
+  pincode: school.pincode || "",
+  schoolType: school.schoolType || "",
+  logo: school.logo || "",
+  bannerImage: school.bannerImage || "",
+});
+
 const Settings = () => {
   useEffect(() => {
     document.title = "NexaManage | Settings";
   }, []);
 
   const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
   const isAdmin = (user?.roleId?.role || user?.roleId?.name) === "Admin";
 
   const [activeSection, setActiveSection] = useState(() =>
@@ -53,27 +76,18 @@ const Settings = () => {
     }
   }, [activeSection, isAdmin]);
 
-  const [schoolData, setSchoolData] = useState({
-    schoolName: user?.schoolId?.schoolName || "JEET PAL2",
-    schoolCode: user?.schoolId?.schoolCode || "SCH-8F9EB176",
-    schoolEmail: user?.schoolId?.schoolEmail || "chandrajeetcare2019@gmail.com",
-    schoolPhone: user?.schoolId?.schoolPhone || "0872615649",
-    board: user?.schoolId?.board || "CBSE",
-    academicSession: user?.schoolId?.academicSession || "2026-27",
-    principalName: user?.schoolId?.principalName || "Atul",
-    affiliationNumber: user?.schoolId?.affiliationNumber || "123cbse",
-    establishedYear: user?.schoolId?.establishedYear || 2017,
-    address: user?.schoolId?.address || "kamasin",
-    city: user?.schoolId?.city || "Jaunpur",
-    state: user?.schoolId?.state || "Uttar Pradesh",
-    pincode: user?.schoolId?.pincode || "222165",
-  });
-
+  const [schoolData, setSchoolData] = useState(() =>
+    getSchoolSettings(user?.schoolId),
+  );
+  const [schoolError, setSchoolError] = useState("");
+  const [schoolSaving, setSchoolSaving] = useState(false);
   const [accountData, setAccountData] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
+  const [accountError, setAccountError] = useState("");
+  const [accountSaving, setAccountSaving] = useState(false);
 
   const [notifications, setNotifications] = useState({
     attendance: true,
@@ -87,6 +101,33 @@ const Settings = () => {
   const [appearance, setAppearance] = useState("system");
 
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let active = true;
+    api.get("/admin/school-profile")
+      .then(({ data }) => {
+        if (active) setSchoolData(getSchoolSettings(data.school));
+      })
+      .catch((error) => {
+        if (active) {
+          setSchoolError(
+            error.response?.data?.message || "Could not load school details.",
+          );
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    setAccountData({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+    });
+  }, [user?.name, user?.email, user?.phone]);
 
   const handleSchoolChange = (field, value) => {
     setSchoolData((prev) => ({
@@ -108,6 +149,71 @@ const Settings = () => {
     setTimeout(() => {
       setSaved(false);
     }, 2500);
+  };
+
+  const handleSaveSchool = async () => {
+    setSchoolError("");
+    setSchoolSaving(true);
+    try {
+      const { data } = await api.put("/admin/school-profile", {
+        schoolName: schoolData.schoolName,
+        schoolPhone: schoolData.schoolPhone,
+        board: schoolData.board,
+        academicSession: schoolData.academicSession,
+        principalName: schoolData.principalName,
+        affiliationNumber: schoolData.affiliationNumber,
+        address: schoolData.address,
+        city: schoolData.city,
+        state: schoolData.state,
+        pincode: schoolData.pincode,
+        schoolType: schoolData.schoolType,
+        establishedYear: schoolData.establishedYear === ""
+          ? null
+          : Number(schoolData.establishedYear),
+      });
+      setSchoolData(getSchoolSettings(data.school));
+      setUser({
+        ...user,
+        schoolId: { ...user.schoolId, ...data.school },
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (error) {
+      setSchoolError(
+        error.response?.data?.message || "School details could not be saved.",
+      );
+    } finally {
+      setSchoolSaving(false);
+    }
+  };
+
+  const handleSchoolImageUploaded = (school) => {
+    setSchoolData((current) => ({ ...current, ...school }));
+    setUser({
+      ...user,
+      schoolId: { ...user.schoolId, ...school },
+    });
+  };
+
+  const handleSaveAccount = async () => {
+    setAccountError("");
+    setAccountSaving(true);
+    try {
+      const { data } = await api.put("/profile/me", {
+        name: accountData.name,
+        phone: accountData.phone,
+      });
+      setAccountData((current) => ({ ...current, ...data.user }));
+      setUser({ ...user, ...data.user });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (error) {
+      setAccountError(
+        error.response?.data?.message || "Account details could not be saved.",
+      );
+    } finally {
+      setAccountSaving(false);
+    }
   };
 
   return (
@@ -144,8 +250,11 @@ const Settings = () => {
               <SchoolSettings
                 schoolData={schoolData}
                 onChange={handleSchoolChange}
-                onSave={handleSave}
+                onSave={handleSaveSchool}
                 saved={saved}
+                saving={schoolSaving}
+                error={schoolError}
+                onImageUploaded={handleSchoolImageUploaded}
               />
             )}
 
@@ -153,8 +262,10 @@ const Settings = () => {
               <AccountSettings
                 accountData={accountData}
                 onChange={handleAccountChange}
-                onSave={handleSave}
+                onSave={handleSaveAccount}
                 saved={saved}
+                saving={accountSaving}
+                error={accountError}
               />
             )}
             {isAdmin && activeSection === "subject" && <AddSubjectSettings />}
@@ -273,7 +384,15 @@ const SettingsSidebar = ({ activeSection, setActiveSection, isAdmin }) => {
 /* School Settings                                                             */
 /* -------------------------------------------------------------------------- */
 
-const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
+const SchoolSettings = ({
+  schoolData,
+  onChange,
+  onSave,
+  saved,
+  saving,
+  error,
+  onImageUploaded,
+}) => {
   return (
     <SettingsCard
       icon={School}
@@ -287,6 +406,7 @@ const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
           label="School Name"
           value={schoolData.schoolName}
           onChange={(e) => onChange("schoolName", e.target.value)}
+          required
         />
 
         <SettingsInput
@@ -300,13 +420,20 @@ const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
           label="School Email"
           type="email"
           value={schoolData.schoolEmail}
-          onChange={(e) => onChange("schoolEmail", e.target.value)}
+          disabled
+          hint="School email cannot be changed."
         />
 
         <SettingsInput
           label="School Phone"
           value={schoolData.schoolPhone}
           onChange={(e) => onChange("schoolPhone", e.target.value)}
+        />
+
+        <SettingsInput
+          label="School Type"
+          value={schoolData.schoolType}
+          onChange={(e) => onChange("schoolType", e.target.value)}
         />
 
         <SettingsInput
@@ -342,6 +469,8 @@ const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
           type="number"
           value={schoolData.establishedYear}
           onChange={(e) => onChange("establishedYear", e.target.value)}
+          min="1800"
+          max={new Date().getFullYear()}
         />
       </div>
 
@@ -375,8 +504,147 @@ const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
         </div>
       </div>
 
-      <SaveBar onSave={onSave} saved={saved} />
+      <SectionTitle icon={ImagePlus} title="School images" />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <SchoolImageUploader
+          title="School logo"
+          description="Upload the school's logo. This is shown beside its name."
+          image={schoolData.logo}
+          imageType="logo"
+          onUploaded={onImageUploaded}
+        />
+        <SchoolImageUploader
+          title="Overview banner"
+          description="Upload a wide image for the top of the public school overview."
+          image={schoolData.bannerImage}
+          imageType="banner"
+          onUploaded={onImageUploaded}
+        />
+      </div>
+
+      {error && (
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+      <SaveBar onSave={onSave} saved={saved} disabled={saving} />
     </SettingsCard>
+  );
+};
+
+const SchoolImageUploader = ({
+  title,
+  description,
+  image,
+  imageType,
+  onUploaded,
+}) => {
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl("");
+      return undefined;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  const uploadImage = async () => {
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    setMessage("");
+    try {
+      const formData = new FormData();
+      formData.append("type", imageType);
+      formData.append("image", file);
+      const { data } = await api.post("/admin/school-profile/image", formData);
+      onUploaded(data.school);
+      setFile(null);
+      setMessage(data.message || "Image uploaded.");
+    } catch (uploadError) {
+      setError(
+        uploadError.response?.data?.message || "Image could not be uploaded.",
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <section className="space-y-3 rounded-xl border border-(--border) p-4">
+      <div>
+        <h4 className="font-semibold text-(--text)">{title}</h4>
+        <p className="mt-1 text-xs text-(--text-muted)">{description}</p>
+      </div>
+      <div
+        className={`grid place-items-center overflow-hidden rounded-lg bg-(--primary-soft-hover) ${
+          imageType === "banner" ? "aspect-[16/6]" : "aspect-square max-h-52"
+        }`}
+      >
+        {(previewUrl || image) ? (
+          <img
+            src={previewUrl || image}
+            alt={`${title} preview`}
+            className={`h-full w-full ${
+              imageType === "banner" ? "object-cover" : "object-contain"
+            }`}
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-(--text-muted)">
+            <ImagePlus size={28} />
+            <span className="text-xs">No image uploaded</span>
+          </div>
+        )}
+      </div>
+      <label className="block text-sm font-medium text-(--text)">
+        Choose image
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={(event) => {
+            const selectedFile = event.target.files?.[0] || null;
+            if (
+              selectedFile &&
+              !["image/jpeg", "image/png", "image/webp"].includes(
+                selectedFile.type,
+              )
+            ) {
+              setFile(null);
+              setError("Choose a JPG, PNG or WebP image.");
+            } else if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
+              setFile(null);
+              setError("Image must be 5 MB or smaller.");
+            } else {
+              setFile(selectedFile);
+              setError("");
+            }
+            setMessage("");
+          }}
+          className="mt-1.5 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-(--primary-soft) file:px-3 file:py-2 file:font-semibold file:text-(--primary)"
+        />
+      </label>
+      <p className="text-xs text-(--text-muted)">
+        JPG, PNG or WebP; maximum file size 5 MB. Uploads separately from school details.
+      </p>
+      <button
+        type="button"
+        onClick={uploadImage}
+        disabled={!file || uploading}
+        className="inline-flex items-center gap-2 rounded-lg bg-(--primary) px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Upload size={16} />
+        {uploading ? "Uploading..." : `Upload ${imageType}`}
+      </button>
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {message && <p role="status" className="text-sm text-emerald-700">{message}</p>}
+    </section>
   );
 };
 
@@ -384,7 +652,14 @@ const SchoolSettings = ({ schoolData, onChange, onSave, saved }) => {
 /* Account Settings                                                            */
 /* -------------------------------------------------------------------------- */
 
-const AccountSettings = ({ accountData, onChange, onSave, saved }) => {
+const AccountSettings = ({
+  accountData,
+  onChange,
+  onSave,
+  saved,
+  saving,
+  error,
+}) => {
   return (
     <SettingsCard
       icon={User}
@@ -417,6 +692,7 @@ const AccountSettings = ({ accountData, onChange, onSave, saved }) => {
           label="Full Name"
           value={accountData.name}
           onChange={(e) => onChange("name", e.target.value)}
+          required
         />
 
         <SettingsInput
@@ -431,10 +707,16 @@ const AccountSettings = ({ accountData, onChange, onSave, saved }) => {
           label="Phone"
           value={accountData.phone}
           onChange={(e) => onChange("phone", e.target.value)}
+          required
         />
       </div>
 
-      <SaveBar onSave={onSave} saved={saved} />
+      {error && (
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+      <SaveBar onSave={onSave} saved={saved} disabled={saving} />
     </SettingsCard>
   );
 };
@@ -740,7 +1022,10 @@ const AddSubjectSettings = () => {
   const [className, setClassName] = useState("");
   const [section, setSection] = useState("");
   const [course, setCourse] = useState("");
+  const [editingClassId, setEditingClassId] = useState("");
+  const [isClassSaving, setIsClassSaving] = useState(false);
   const [subjectName, setSubjectName] = useState("");
+  const [editingSubject, setEditingSubject] = useState(null);
   const [classes, setClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [savedSubjects, setSavedSubjects] = useState([]);
@@ -799,21 +1084,63 @@ const AddSubjectSettings = () => {
   const handleAddClass = async (event) => {
     event.preventDefault();
     setErrorMessage("");
+    setIsClassSaving(true);
     try {
-      const response = await api.post("/add-class", {
+      const payload = {
         name: className,
         section,
         course,
-      });
+      };
+      const response = editingClassId
+        ? await api.put(`/classes/${editingClassId}`, payload)
+        : await api.post("/add-class", payload);
       await getAllClasses();
       setSelectedClassId(response.data.class._id);
       setClassName("");
       setSection("");
       setCourse("");
+      setEditingClassId("");
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "Could not create class.",
       );
+    } finally {
+      setIsClassSaving(false);
+    }
+  };
+
+  const handleEditClass = (record) => {
+    setEditingClassId(record._id);
+    setClassName(record.name);
+    setSection(record.section);
+    setCourse(record.course);
+    setErrorMessage("");
+  };
+
+  const cancelEditClass = () => {
+    setEditingClassId("");
+    setClassName("");
+    setSection("");
+    setCourse("");
+  };
+
+  const handleUpdateSubject = async (event) => {
+    event.preventDefault();
+    if (!editingSubject?.name.trim()) return;
+    setErrorMessage("");
+    setIsSaving(true);
+    try {
+      await api.put(`/subjects/${editingSubject.id}`, {
+        name: editingSubject.name.trim(),
+      });
+      setEditingSubject(null);
+      await getAllSubject(selectedClassId);
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Could not update subject.",
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -903,31 +1230,61 @@ const AddSubjectSettings = () => {
         />
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--primary) px-4 py-2.5 text-sm font-medium text-white"
+          disabled={isClassSaving}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--primary) px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
-          <Plus size={17} /> Create Class
+          {isClassSaving ? (
+            "Saving..."
+          ) : (
+            <>
+              {editingClassId ? <Save size={17} /> : <Plus size={17} />}
+              {editingClassId ? "Save Class" : "Create Class"}
+            </>
+          )}
         </button>
+        {editingClassId && (
+          <button
+            type="button"
+            onClick={cancelEditClass}
+            disabled={isClassSaving}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-(--border) px-4 py-2.5 text-sm"
+          >
+            <X size={17} /> Cancel
+          </button>
+        )}
       </form>
 
       <div className="flex flex-wrap gap-2">
         {classes.map((record) => (
-          <button
-            type="button"
+          <div
             key={record._id}
-            onClick={() => setSelectedClassId(record._id)}
-            className={`rounded-lg border px-3 py-2 text-left text-sm ${
+            className={`flex items-center gap-1 rounded-lg border px-2 py-1 ${
               selectedClassId === record._id
                 ? "border-(--primary) bg-(--primary-soft) text-(--primary)"
                 : "border-(--border) bg-(--primary-soft-hover)"
             }`}
           >
-            <span className="font-semibold">
-              {record.name} - {record.section}
-            </span>
-            <span className="ml-2 text-xs text-(--text-muted)">
-              {record.course}
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setSelectedClassId(record._id)}
+              className="px-1 py-1 text-left text-sm"
+            >
+              <span className="font-semibold">
+                {record.name} - {record.section}
+              </span>
+              <span className="ml-2 text-xs text-(--text-muted)">
+                {record.course}
+              </span>
+            </button>
+            <button
+              type="button"
+              aria-label={`Edit ${record.name} ${record.section}`}
+              onClick={() => handleEditClass(record)}
+              className="rounded p-1.5 hover:bg-(--primary-soft-hover)"
+            >
+              <Pencil size={14} />
+            </button>
+          </div>
         ))}
         {classes.length === 0 && (
           <p className="text-sm text-(--text-muted)">
@@ -1026,11 +1383,61 @@ const AddSubjectSettings = () => {
                 key={subject.id}
                 className="flex items-center gap-2 rounded-lg border border-(--border) bg-(--primary-soft) px-3 py-2"
               >
-                <span className="text-sm">{subject.name}</span>
-                <button
-                  type="button"
-                  aria-label={`Remove ${subject.name} from class`}
+                {editingSubject?.id === subject.id ? (
+                  <form
+                    onSubmit={handleUpdateSubject}
+                    className="flex items-center gap-2"
+                  >
+                    <Input
+                      autoFocus
+                      required
+                      maxLength={100}
+                      value={editingSubject.name}
+                      onChange={(event) =>
+                        setEditingSubject((current) => ({
+                          ...current,
+                          name: event.target.value,
+                        }))
+                      }
+                      className="w-40 text-sm"
+                    />
+                    <button
+                      type="submit"
+                      aria-label="Save subject name"
+                      disabled={isSaving}
+                      className="rounded p-1 text-(--primary) disabled:opacity-60"
+                    >
+                      <Check size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Cancel subject edit"
+                      onClick={() => setEditingSubject(null)}
+                      className="rounded p-1"
+                    >
+                      <X size={16} />
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <span className="text-sm">{subject.name}</span>
+                    <button
+                      type="button"
+                      aria-label={`Edit ${subject.name}`}
+                      className="rounded p-1 text-(--text-muted) hover:text-(--primary)"
+                      onClick={() =>
+                        setEditingSubject({ id: subject.id, name: subject.name })
+                      }
+                    >
+                      <Pencil size={14} />
+                    </button>
+                  </>
+                )}
+                  <button
+                    type="button"
+                    aria-label={`Remove ${subject.name} from class`}
                   className="rounded p-1 text-(--danger) hover:bg-(--danger)/10"
+                  disabled={editingSubject?.id === subject.id}
                   onClick={() => {
                     setSelectedSubjectId(subject.id);
                     setShowAlertPage(true);
@@ -1120,6 +1527,9 @@ const SettingsInput = ({
   type = "text",
   disabled = false,
   hint,
+  required = false,
+  min,
+  max,
 }) => {
   return (
     <div>
@@ -1137,6 +1547,9 @@ const SettingsInput = ({
           value={value ?? ""}
           onChange={onChange}
           disabled={disabled}
+          required={required}
+          min={min}
+          max={max}
           className={`w-full rounded-xl border border-(--border) px-3 py-2.5 text-sm text-(--text) bg-(--primary-soft) outline-none transition ${
             disabled
               ? "cursor-not-allowed  opacity-60"
@@ -1206,7 +1619,7 @@ const ToggleRow = ({ title, description, enabled, onToggle }) => {
   );
 };
 
-const SaveBar = ({ onSave, saved }) => {
+const SaveBar = ({ onSave, saved, disabled = false }) => {
   return (
     <div className="flex flex-col gap-3 border-t border-(--border) pt-5 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-xs text-(--text-muted)">
@@ -1214,10 +1627,14 @@ const SaveBar = ({ onSave, saved }) => {
       </p>
 
       <button
+        type="button"
         onClick={onSave}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--primary) px-5 py-2.5 text-sm font-semibold text-(--surface) transition hover:opacity-90"
+        disabled={disabled}
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-(--primary) px-5 py-2.5 text-sm font-semibold text-(--surface) transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {saved ? (
+        {disabled ? (
+          "Saving..."
+        ) : saved ? (
           <>
             <Check size={17} />
             Saved

@@ -4,10 +4,12 @@ import {
   CheckCircle2,
   Mail,
   MapPin,
+  Menu,
   MessageSquareText,
   Phone,
   Send,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { api } from "../services/api";
@@ -35,6 +37,7 @@ export default function About() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [menu, setMenu] = useState(false);
 
   useEffect(() => {
     document.title = "NexaManage | About & feedback";
@@ -84,11 +87,13 @@ export default function About() {
           </div>
         </Link>
 
-        <nav className="flex items-center gap-3 text-sm font-medium sm:gap-6">
+        <nav
+          className={`${menu ? " absolute  -right-5 top-16  space-y-2 flex pl-10 flex-col gap-2 bg-(--primary-soft) px-2 py-2 w-[70%]" : " items-center gap-2 text-xs font-medium text-(--text) sm:gap-4 sm:text-sm hidden sm:flex "}`}
+        >
           <Link to="/features" className="text-slate-600 hover:text-indigo-700">
             Features
           </Link>
-          <Link to="/about" className="text-indigo-700">
+          <Link to="/about" className="hover:text-indigo-700">
             About
           </Link>
           {canReviewFeedback && (
@@ -107,16 +112,33 @@ export default function About() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2 pr-2">
+        <div
+          className={` ${menu ? "absolute -right-5 top-33 flex pl-10 flex-col space-y-2 bg-(--primary-soft) px-2 py-4 w-[70%] " : "sm:flex hidden items-center gap-2 pr-2"}`}
+        >
           <ThemeButton />
           <div className="relative group">
             <Link
               to="/create/organisation"
-              className="rounded-xl  px-3 py-2 text-xs font-semibold text-(--text) hover:bg-indigo-700 sm:px-4 sm:text-sm"
+              className="rounded-xl   py-2 text-xs font-semibold text-(--text) hover:bg-indigo-700 sm:px-4 sm:text-sm"
             >
               Get started
             </Link>
           </div>
+        </div>
+        <div className="sm:hidden pr-2">
+          {menu ? (
+            <X
+              size={40}
+              className="px-1.5 py-2 border border-(--border) rounded-tr-md rounded-bl-md"
+              onClick={() => setMenu(!menu)}
+            />
+          ) : (
+            <Menu
+              size={40}
+              className="px-1.5 py-2 border border-(--border) rounded-tr-md rounded-bl-md"
+              onClick={() => setMenu(!menu)}
+            />
+          )}
         </div>
       </header>
 
@@ -149,7 +171,7 @@ export default function About() {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:py-20">
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <article className="rounded-3xl border border-(--border) bg-(--primary-soft) p-6 shadow-sm sm:p-8">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">
             Founder & creator
           </p>
@@ -191,7 +213,7 @@ export default function About() {
           </div>
         </article>
 
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <article className="rounded-3xl border border-(--border) bg-(--primary-soft) p-6 shadow-sm sm:p-8">
           <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
             <ShieldCheck size={21} />
           </div>
@@ -210,12 +232,12 @@ export default function About() {
           >
             Explore all features <ArrowRight size={17} />
           </Link>
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">
+          <div className="mt-7 gap-3 flex flex-wrap ">
             {["Clear workflows", "Role-aware access", "Connected records"].map(
               (item) => (
                 <div
                   key={item}
-                  className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-3 text-xs font-semibold text-slate-700"
+                  className="flex items-center gap-2 w-fit rounded-xl border border-(--success) px-3 py-3 text-xs font-semibold text-slate-700"
                 >
                   <CheckCircle2
                     size={16}
@@ -398,11 +420,72 @@ export default function About() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-slate-50 px-4 py-7 text-center text-sm text-slate-500">
-        © {new Date().getFullYear()} NexaManage ·{" "}
-        <Link to="/" className="font-medium text-indigo-700 hover:underline">
-          Home
-        </Link>
+      <footer className="border-t border-(--border) px-4 py-10 sm:px-6 lg:px-8">
+        <div
+          className="
+            mx-auto
+            flex max-w-7xl
+            flex-col
+            items-center
+            justify-between
+            gap-5
+            md:flex-row
+          "
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                flex h-9 w-9
+                items-center justify-center
+                rounded-lg
+                bg-(--primary)
+                font-bold
+                text-white
+              "
+            >
+              N
+            </div>
+
+            <div>
+              <div className="font-bold">NexaManage</div>
+              <div className="text-xs text-(--text-muted)">
+                School management, in one place.
+              </div>
+            </div>
+          </div>
+
+          <div className="text-xs text-(--text-muted)">
+            © {new Date().getFullYear()} NexaManage. All rights reserved.{" "}
+            <span className="text-(--primary) text-[9px]">JEET PAL</span>
+          </div>
+
+          <div className="text-sm text-(--text-secondary) grid grid-cols-3 gap-2">
+            <NavLink to="/features" className="hover:text-(--primary)">
+              Features
+            </NavLink>
+            <NavLink
+              to="/about"
+              className="hover:text-(--primary) text-nowrap -ml-5 sm:ml-0"
+            >
+              About & feedback
+            </NavLink>
+            <NavLink
+              to="/#schools"
+              className="hover:text-(--primary) text-nowrap"
+            >
+              Find a school
+            </NavLink>
+            <NavLink to="/login" className="hover:text-(--primary)">
+              Login
+            </NavLink>
+            <NavLink
+              to="/create/organisation"
+              className="hover:text-(--primary) text-nowrap"
+            >
+              Create a school workspace
+            </NavLink>
+          </div>
+        </div>
       </footer>
     </main>
   );

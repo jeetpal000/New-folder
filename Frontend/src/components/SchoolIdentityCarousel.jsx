@@ -6,7 +6,7 @@ const SchoolIdentityCarousel = () => {
   const school = useAuthStore((state) => state.user?.schoolId);
   const schoolName = school?.schoolName || "Your school";
   const slides = [
-    school?.logo,
+    school?.bannerImage,
     ...(school?.publicHighlights || []).map((item) => item.imageUrl),
   ].filter(
     (imageUrl) => typeof imageUrl === "string" && /^https:\/\//i.test(imageUrl),
@@ -53,14 +53,14 @@ const SchoolIdentityCarousel = () => {
           <School size={15} />
           School workspace
         </span>
-        <h2 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl">
+        <h2 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl bg-black/50">
           {schoolName}
         </h2>
-        <p className="mt-2 text-sm text-white/85 sm:text-base">
+        <p className="mt-2 text-sm text-white/85 sm:text-base bg-black/50">
           You are signed in to your school’s management workspace.
         </p>
         {(school?.city || school?.state) && (
-          <p className="mt-2 text-sm text-white/75">
+          <p className="mt-2 text-sm text-white/75 bg-black/50">
             {[school.city, school.state].filter(Boolean).join(", ")}
           </p>
         )}

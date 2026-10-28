@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   assignClassTeacher,
+  getAdminSchoolProfile,
   getAdminPublicSchoolProfile,
   getClassTeacherAssignments,
   listAdmissionApplications,
@@ -8,15 +9,39 @@ import {
   reviewAdmissionApplication,
   reviewLeaveRequest,
   updateAdminPublicSchoolProfile,
+  updateAdminSchoolProfile,
+  uploadAdminSchoolImage,
 } from "../controllers/publicSchoolController.js";
 import { authenticate } from "../middleware/auth.js";
 import { requireRole } from "../middleware/permit.js";
 import requireActiveSubscription from "../middleware/requireActiveSubscription.js";
+import { uploadSchoolImageFile } from "../middleware/schoolImageUpload.js";
 
 const router = Router();
 
 const requireAdmin = requireRole("Admin");
 
+router.get(
+  "/admin/school-profile",
+  authenticate,
+  requireAdmin,
+  getAdminSchoolProfile,
+);
+router.put(
+  "/admin/school-profile",
+  authenticate,
+  requireActiveSubscription,
+  requireAdmin,
+  updateAdminSchoolProfile,
+);
+router.post(
+  "/admin/school-profile/image",
+  authenticate,
+  requireActiveSubscription,
+  requireAdmin,
+  uploadSchoolImageFile,
+  uploadAdminSchoolImage,
+);
 router.get(
   "/admin/admission-applications",
   authenticate,

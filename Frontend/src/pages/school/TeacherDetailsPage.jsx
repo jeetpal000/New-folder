@@ -562,12 +562,12 @@ export default function TeacherDetailsPage() {
                   true ? (
                     <img
                       src={
-                        // teacher.schoolId.logo ||
+                        teacher.schoolId.logo ||
                         "https://res.cloudinary.com/df5fycocb/image/upload/v1792678256/students/6abd4469744359448f9eb176/wkpe01npcxveqggy7xjv.jpg"
                       }
                       alt="School logo"
                       crossOrigin="anonymous"
-                      className="h-12 w-12 shrink-0 rounded-xl  shadow-md"
+                      className="h-12 w-12 shrink-0 rounded-full  shadow-md"
                     />
                   ) : (
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/20">

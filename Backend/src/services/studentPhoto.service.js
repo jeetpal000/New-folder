@@ -5,7 +5,7 @@ const configureCloudinary = () => {
   const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
     process.env;
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-    throw new AppError("Student photo storage is not configured", 503);
+    throw new AppError("Image storage is not configured", 503);
   }
 
   cloudinary.config({
@@ -27,11 +27,11 @@ export const uploadStudentPhoto = (file, schoolId, folder = "students") => {
       },
       (error, result) => {
         if (error) {
-          reject(new AppError("Could not upload student photo to Cloudinary", 502));
+          reject(new AppError("Could not upload image to Cloudinary", 502));
           return;
         }
         if (!result?.secure_url || !result.public_id) {
-          reject(new AppError("Cloudinary returned an invalid photo response", 502));
+          reject(new AppError("Cloudinary returned an invalid image response", 502));
           return;
         }
         resolve({ url: result.secure_url, publicId: result.public_id });
@@ -50,6 +50,6 @@ export const destroyStudentPhoto = async (publicId) => {
     resource_type: "image",
   });
   if (!["ok", "not found"].includes(result.result)) {
-    throw new AppError("Could not delete student photo from Cloudinary", 502);
+    throw new AppError("Could not delete image from Cloudinary", 502);
   }
 };

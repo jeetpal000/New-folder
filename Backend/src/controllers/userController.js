@@ -35,6 +35,42 @@ export const getCurrentUser = async (req, res) => {
   });
 };
 
+export const updateMyProfile = async (req, res, next) => {
+  try {
+    const { name, phone } = req.body || {};
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      name.trim().length > 120 ||
+      typeof phone !== "string" ||
+      !phone.trim() ||
+      phone.trim().length > 30
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid name and phone number",
+      });
+    }
+
+    req.user.name = name.trim();
+    req.user.phone = phone.trim();
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Account profile updated",
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.phone,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const getAllSessionData = async (req, res, next) => {
   try {
     const userId = req.auth.userId;

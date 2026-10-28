@@ -6,6 +6,8 @@ import {
   deleteSubjectController,
   getClassesController,
   getSubjectController,
+  updateClassController,
+  updateSubjectController,
 } from "../controllers/subjectController.js";
 import { requirePermission, requireRole } from "../middleware/permit.js";
 import requireActiveSubscription from "../middleware/requireActiveSubscription.js";
@@ -33,6 +35,13 @@ subjectRouter.delete(
   requirePermission("subject.delete"),
   deleteSubjectController,
 );
+subjectRouter.put(
+  "/subjects/:id",
+  authenticate,
+  requireActiveSubscription,
+  requireRole("Admin"),
+  updateSubjectController,
+);
 subjectRouter.get("/get-classes", authenticate, getClassesController);
 subjectRouter.post(
   "/add-class",
@@ -40,6 +49,13 @@ subjectRouter.post(
   requireActiveSubscription,
   requireRole("Admin"),
   addClassController,
+);
+subjectRouter.put(
+  "/classes/:id",
+  authenticate,
+  requireActiveSubscription,
+  requireRole("Admin"),
+  updateClassController,
 );
 // subjectRouter.get("/edit-subject", authenticate, deleteSubjectController);
 

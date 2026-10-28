@@ -40,6 +40,9 @@ const schoolSchema = new mongoose.Schema({
   academicSession: String,
   establishedYear: Number,
   logo: String,
+  logoPublicId: String,
+  bannerImage: String,
+  bannerImagePublicId: String,
 
   admissionOpen: { type: Boolean, default: false },
   facilities: {

@@ -88,12 +88,12 @@ const Home = () => {
             <NavLink to="/about" className="transition hover:text-(--primary)">
               About
             </NavLink>
-            <NavLink
-              to="/#schools"
+            <a
+              href="/#schools"
               className="hidden transition hover:text-(--primary) lg:inline"
             >
               Schools
-            </NavLink>
+            </a>
           </nav>
 
           <div
@@ -383,17 +383,24 @@ const Home = () => {
             </div>
 
             <div className="text-xs text-(--text-muted)">
-              © {new Date().getFullYear()} NexaManage. All rights reserved.
+              © {new Date().getFullYear()} NexaManage. All rights reserved.{" "}
+              <span className="text-(--primary) text-[9px]">JEET PAL</span>
             </div>
 
-            <div className="flex gap-5 text-sm text-(--text-secondary)">
+            <div className="text-sm text-(--text-secondary) grid grid-cols-3 gap-2">
               <NavLink to="/features" className="hover:text-(--primary)">
                 Features
               </NavLink>
-              <NavLink to="/about" className="hover:text-(--primary)">
+              <NavLink
+                to="/about"
+                className="hover:text-(--primary) text-nowrap -ml-5 sm:ml-0"
+              >
                 About & feedback
               </NavLink>
-              <NavLink to="/#schools" className="hover:text-(--primary)">
+              <NavLink
+                to="/#schools"
+                className="hover:text-(--primary) text-nowrap"
+              >
                 Find a school
               </NavLink>
               <NavLink to="/login" className="hover:text-(--primary)">
@@ -401,7 +408,7 @@ const Home = () => {
               </NavLink>
               <NavLink
                 to="/create/organisation"
-                className="hover:text-(--primary)"
+                className="hover:text-(--primary) text-nowrap"
               >
                 Create a school workspace
               </NavLink>

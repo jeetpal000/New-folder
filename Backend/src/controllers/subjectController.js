@@ -194,6 +194,54 @@ export const deleteSubjectController = async(req, res)=>{
   }
 }
 
+export const updateSubjectController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user.schoolId._id;
+    const name =
+      typeof req.body?.name === "string" ? req.body.name.trim() : "";
+    if (!mongoose.isValidObjectId(id) || !name || name.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid subject name",
+      });
+    }
+
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const duplicate = await Subject.exists({
+      schoolId,
+      name: { $regex: `^${escapedName}$`, $options: "i" },
+      _id: { $ne: id },
+    });
+    if (duplicate) {
+      return res.status(409).json({
+        success: false,
+        message: "A subject with this name already exists",
+      });
+    }
+
+    const subject = await Subject.findOneAndUpdate(
+      { _id: id, schoolId },
+      { $set: { name } },
+      { new: true, runValidators: true },
+    ).select("_id name classIds");
+    if (!subject) {
+      return res.status(404).json({ success: false, message: "Subject not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Subject updated successfully",
+      subject,
+    });
+  } catch (error) {
+    console.error("Update subject error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update subject",
+    });
+  }
+};
+
 export const getClassesController = async (req, res) => {
   try {
     const schoolId = req.user.schoolId._id;
@@ -223,9 +271,10 @@ export const addClassController = async (req, res) => {
     }
 
     const schoolId = req.user.schoolId._id;
-    const name = String(req.body.name || "").trim();
-    const section = String(req.body.section || "").trim().toUpperCase();
-    const course = String(req.body.course || "").trim();
+    const body = req.body || {};
+    const name = String(body.name || "").trim();
+    const section = String(body.section || "").trim().toUpperCase();
+    const course = String(body.course || "").trim();
     if (!name || !section || !course) {
       return res.status(400).json({
         success: false,
@@ -248,5 +297,62 @@ export const addClassController = async (req, res) => {
     }
     console.error("Add class error:", error);
     return res.status(500).json({ success: false, message: "Failed to create class" });
+  }
+};
+
+export const updateClassController = async (req, res) => {
+  try {
+    const classAccessScope = await getClassAccessScope(req.user);
+    if (classAccessScope !== null) {
+      return res.status(403).json({
+        success: false,
+        message: "Only school administrators can update classes",
+      });
+    }
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid class ID" });
+    }
+
+    const body = req.body || {};
+    const name = String(body.name || "").trim();
+    const section = String(body.section || "").trim().toUpperCase();
+    const course = String(body.course || "").trim();
+    if (
+      !name ||
+      !section ||
+      !course ||
+      name.length > 100 ||
+      section.length > 20 ||
+      course.length > 100
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid class name, section and course",
+      });
+    }
+
+    const classRecord = await Class.findOneAndUpdate(
+      { _id: id, schoolId: req.user.schoolId._id },
+      { $set: { name, section, course } },
+      { new: true, runValidators: true },
+    ).select("_id name section course");
+    if (!classRecord) {
+      return res.status(404).json({ success: false, message: "Class not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Class updated successfully",
+      class: classRecord,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "This class and section already exist",
+      });
+    }
+    console.error("Update class error:", error);
+    return res.status(500).json({ success: false, message: "Failed to update class" });
   }
 };

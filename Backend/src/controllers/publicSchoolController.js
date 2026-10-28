@@ -17,6 +17,10 @@ import {
   releasePlanUsage,
   reservePlanUsage,
 } from "../services/subscription.service.js";
+import {
+  destroyStudentPhoto,
+  uploadStudentPhoto,
+} from "../services/studentPhoto.service.js";
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const escapeHtml = (value) =>
@@ -220,6 +224,164 @@ export const getAdminPublicSchoolProfile = async (req, res, next) => {
   }
 };
 
+export const getAdminSchoolProfile = async (req, res, next) => {
+  try {
+    const school = await School.findById(req.user.schoolId._id)
+      .select(
+        "schoolName slug schoolCode board city address pincode schoolEmail schoolPhone state schoolType principalName affiliationNumber academicSession establishedYear logo bannerImage",
+      )
+      .lean();
+    if (!school) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+    return res.status(200).json({ success: true, school });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateAdminSchoolProfile = async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const stringFields = {
+      schoolName: 150,
+      board: 100,
+      city: 100,
+      address: 300,
+      pincode: 20,
+      schoolPhone: 30,
+      state: 100,
+      schoolType: 80,
+      principalName: 120,
+      affiliationNumber: 100,
+      academicSession: 30,
+    };
+    const updates = {};
+
+    for (const [field, maxLength] of Object.entries(stringFields)) {
+      if (body[field] === undefined) continue;
+      if (typeof body[field] !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: `${field} must be a string`,
+        });
+      }
+      const value = body[field].trim();
+      if (value.length > maxLength || (field === "schoolName" && !value)) {
+        return res.status(400).json({
+          success: false,
+          message: `Enter a valid ${field}`,
+        });
+      }
+      updates[field] = value;
+    }
+
+    if (body.establishedYear !== undefined) {
+      if (
+        body.establishedYear !== null &&
+        body.establishedYear !== "" &&
+        (!Number.isInteger(Number(body.establishedYear)) ||
+          Number(body.establishedYear) < 1800 ||
+          Number(body.establishedYear) > new Date().getFullYear())
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Enter a valid established year",
+        });
+      }
+      updates.establishedYear =
+        body.establishedYear === null || body.establishedYear === ""
+          ? null
+          : Number(body.establishedYear);
+    }
+
+    const school = await School.findByIdAndUpdate(
+      req.user.schoolId._id,
+      { $set: updates },
+      { new: true, runValidators: true },
+    ).select(
+      "schoolName slug schoolCode board city address pincode schoolEmail schoolPhone state schoolType principalName affiliationNumber academicSession establishedYear logo bannerImage",
+    );
+    if (!school) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "School profile updated",
+      school,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const uploadAdminSchoolImage = async (req, res, next) => {
+  let uploadedImage;
+  let imagePersisted = false;
+  try {
+    const imageType = req.body?.type;
+    if (!["logo", "banner"].includes(imageType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Choose whether this image is the school logo or overview banner",
+      });
+    }
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Select an image to upload",
+      });
+    }
+
+    const school = await School.findById(req.user.schoolId._id);
+    if (!school) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+
+    uploadedImage = await uploadStudentPhoto(
+      req.file,
+      school._id,
+      `schools/${imageType}`,
+    );
+    const urlField = imageType === "logo" ? "logo" : "bannerImage";
+    const publicIdField =
+      imageType === "logo" ? "logoPublicId" : "bannerImagePublicId";
+    const previousPublicId = school[publicIdField];
+
+    school[urlField] = uploadedImage.url;
+    school[publicIdField] = uploadedImage.publicId;
+    await school.save();
+    imagePersisted = true;
+
+    if (previousPublicId) {
+      try {
+        await destroyStudentPhoto(previousPublicId);
+      } catch (cleanupError) {
+        console.error("Could not delete the replaced school image:", cleanupError);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: imageType === "logo" ? "School logo uploaded" : "Overview banner uploaded",
+      school: {
+        _id: school._id,
+        logo: school.logo,
+        bannerImage: school.bannerImage,
+      },
+    });
+  } catch (error) {
+    if (uploadedImage && !imagePersisted) {
+      try {
+        await destroyStudentPhoto(uploadedImage.publicId);
+      } catch (cleanupError) {
+        console.error("Could not delete an unlinked school image:", cleanupError);
+      }
+    }
+    return next(error);
+  }
+};
+
 export const updateAdminPublicSchoolProfile = async (req, res, next) => {
   try {
     const { admissionOpen, facilities, publicHighlights } = req.body;
@@ -415,6 +577,7 @@ export const getPublicSchoolProfile = async (req, res, next) => {
         academicSession: school.academicSession,
         establishedYear: school.establishedYear,
         logo: school.logo,
+        bannerImage: school.bannerImage,
         facilities: school.facilities || [],
         publicHighlights: school.publicHighlights || [],
         admissionOpen: school.admissionOpen,

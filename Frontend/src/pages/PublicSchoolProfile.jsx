@@ -174,6 +174,15 @@ const PublicSchoolProfile = () => {
       </Link>
 
       <header className="rounded-3xl border border-(--border) bg-(--primary-soft) backdrop-blur-md p-6 sm:p-9">
+        {school.bannerImage && (
+          <div className="-mx-6 -mt-6 mb-6 h-44 overflow-hidden rounded-t-3xl sm:-mx-9 sm:-mt-9 sm:mb-8 sm:h-56">
+            <img
+              src={school.bannerImage}
+              alt={`${school.schoolName} overview banner`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
             <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-(--primary-soft) text-(--primary)">
