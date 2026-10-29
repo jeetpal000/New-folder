@@ -331,6 +331,7 @@ export default function About() {
                   maxLength={254}
                   value={form.email}
                   onChange={updateField("email")}
+                  placeholder="Example@gmail.com"
                   autoComplete="email"
                   className="mt-1.5 w-full rounded-xl border border-(--border) bg-(--primary-soft-hover)"
                 />
@@ -346,6 +347,7 @@ export default function About() {
                   maxLength={30}
                   value={form.phone}
                   onChange={updateField("phone")}
+                  placeholder="1234567890"
                   autoComplete="tel"
                   className="mt-1.5 w-full rounded-xl border border-(--border) bg-(--primary-soft-hover)"
                 />

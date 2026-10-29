@@ -53,14 +53,14 @@ const SchoolIdentityCarousel = () => {
           <School size={15} />
           School workspace
         </span>
-        <h2 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl bg-black/50">
+        <h2 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl bg-black/30 w-fit  px-1 rounded-xl">
           {schoolName}
         </h2>
-        <p className="mt-2 text-sm text-white/85 sm:text-base bg-black/50">
+        <p className="mt-2 text-sm text-white/85 sm:text-base bg-black/30 w-fit px-1 rounded-md">
           You are signed in to your school’s management workspace.
         </p>
         {(school?.city || school?.state) && (
-          <p className="mt-2 text-sm text-white/75 bg-black/50">
+          <p className="mt-2 text-sm text-white/75 bg-black/30 px-1 rounded-md w-fit">
             {[school.city, school.state].filter(Boolean).join(", ")}
           </p>
         )}
